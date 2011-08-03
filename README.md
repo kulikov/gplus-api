@@ -4,7 +4,8 @@
 Пример
 ------
 
-	[http://gplus.kulikovd.ru/demo.html]
+http://gplus.kulikovd.ru/demo.html — внизу странички после коментариев из дискуса
+
 
 Использование
 -------------
