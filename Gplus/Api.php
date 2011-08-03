@@ -18,74 +18,74 @@ class Api
 
     public static function factory($profileId, array $options = array())
     {
-    	if (!$profileId) {
-    		throw new \Exception('Set your +profile id');
-    	}
+        if (!$profileId) {
+            throw new \Exception('Set your +profile id');
+        }
 
-    	$api = new self();
+        $api = new self();
 
-    	$api->setProfile(new Profile($profileId));
+        $api->setProfile(new Profile($profileId));
 
-    	if (isset($options['cacher'])) {
-    		$api->setCacher($options['cacher']);
-    	}
+        if (isset($options['cacher'])) {
+            $api->setCacher($options['cacher']);
+        }
 
-    	return $api;
+        return $api;
     }
 
     public function setProfile(Profile $profile)
     {
-    	$this->_profile = $profile;
-    	return $this;
+        $this->_profile = $profile;
+        return $this;
     }
 
     public function setCacher(\Zend\Cache\Frontend $cacher)
     {
-    	$this->_cacher = $cacher;
-    	return $this;
+        $this->_cacher = $cacher;
+        return $this;
     }
 
 
     public function getPingbackComments($url)
     {
-    	if (!$url) {
-    		throw new \Exception('Set url for pingback!');
-    	}
+        if (!$url) {
+            throw new \Exception('Set url for pingback!');
+        }
 
-    	$posts = $this->getLastPosts();
+        $posts = $this->getLastPosts();
 
-    	foreach ($posts as $post) {
-    		if ($post->containsString($url)) {
+        foreach ($posts as $post) {
+            if ($post->containsString($url)) {
 
-    			/**    			 * Сохраняем пост, в котором была найденна ссылка
-    			 * В следующий раз, когда $this->getLastPosts() не вернет нам нужный пост мы будем доставать комменты из заранее известного поста    			 */
-    			$this->_savePostToUrlLink($post, $url);
+                /**                 * Сохраняем пост, в котором была найденна ссылка
+                 * В следующий раз, когда $this->getLastPosts() не вернет нам нужный пост мы будем доставать комменты из заранее известного поста                 */
+                $this->_savePostToUrlLink($post, $url);
 
-    			return $this->getPostComments($post);    		}
-    	}
+                return $this->getPostComments($post);            }
+        }
 
-    	/* ссылка не найдена в недавних постах — может мы ее парсили ранее и она есть в кеше? */
-    	if ($post = $this->_getPostByUrlFromCache($url)) {
-    		return $this->getPostComments($post);
-    	}
+        /* ссылка не найдена в недавних постах — может мы ее парсили ранее и она есть в кеше? */
+        if ($post = $this->_getPostByUrlFromCache($url)) {
+            return $this->getPostComments($post);
+        }
 
-    	return array();
+        return array();
     }
 
 
     public function getPostComments(Post $post)
     {
-    	$_commentsUrl = sprintf(self::COMMENTS_JSON_URL, $post->getId());
+        $_commentsUrl = sprintf(self::COMMENTS_JSON_URL, $post->getId());
 
-    	$content = $this->_cache(3600, $_commentsUrl, function() use ($_commentsUrl) {
+        $content = $this->_cache(3600, $_commentsUrl, function() use ($_commentsUrl) {
 
-    		$client = new \Zend\Http\Client($_commentsUrl);
-    		$content = $client->request()->getBody();
-    		return \Zend\Json\Decoder::decode(substr($content, 5), \Zend\Json\Json::TYPE_ARRAY);
+            $client = new \Zend\Http\Client($_commentsUrl);
+            $content = $client->request()->getBody();
+            return \Zend\Json\Decoder::decode(substr($content, 5), \Zend\Json\Json::TYPE_ARRAY);
         });
 
         if (empty($content[1][7])) {
-        	throw new \Exception('Error fetch post comments');
+            throw new \Exception('Error fetch post comments');
         }
 
         $output = array();
@@ -106,32 +106,32 @@ class Api
 
     public function getLastPosts()
     {
-    	$_profileId = $this->_profile->getId();
-    	$_postUrl   = sprintf(self::POSTS_JSON_URL, $_profileId, $_profileId);
+        $_profileId = $this->_profile->getId();
+        $_postUrl   = sprintf(self::POSTS_JSON_URL, $_profileId, $_profileId);
 
-    	$content = $this->_cache(3600, $_postUrl, function() use ($_postUrl) {
+        $content = $this->_cache(3600, $_postUrl, function() use ($_postUrl) {
 
-    		$client = new \Zend\Http\Client($_postUrl);
-    		$content = $client->request()->getBody();
+            $client = new \Zend\Http\Client($_postUrl);
+            $content = $client->request()->getBody();
 
-    		if (!$content) {
-    			throw new \Exception('Error fetch posts');
-    		}
+            if (!$content) {
+                throw new \Exception('Error fetch posts');
+            }
 
-    		return \Zend\Json\Decoder::decode(substr($content, 5), \Zend\Json\Json::TYPE_ARRAY);
+            return \Zend\Json\Decoder::decode(substr($content, 5), \Zend\Json\Json::TYPE_ARRAY);
         });
 
         $output = array();
         foreach ($content[1][0] as $_post) {
-        	$output[] = new Post(array(
-        		'id'         => $_post[8],
-        		'authorName' => $_post[3],
-        		'date'       => round($_post[5] / 1000),
-        		'text'       => $_post[4],
-        		'authorName' => $_post[8],
-        		'url'        => self::GPLUS_URL . $_post[21],
-        		'allContent' => $_post,
-        	));
+            $output[] = new Post(array(
+                'id'         => $_post[8],
+                'authorName' => $_post[3],
+                'date'       => round($_post[5] / 1000),
+                'text'       => $_post[4],
+                'authorName' => $_post[8],
+                'url'        => self::GPLUS_URL . $_post[21],
+                'allContent' => $_post,
+            ));
         }
 
         return $output;
@@ -169,18 +169,18 @@ class Api
 
     private function _savePostToUrlLink(Post $post, $url)
     {
-    	$this->_getPostToUrlLinkStorage()->save(array(
-    		'id'  => $post->getId(),
-    		'url' => $post->getUrl(),
-    	), md5($url));
+        $this->_getPostToUrlLinkStorage()->save(array(
+            'id'  => $post->getId(),
+            'url' => $post->getUrl(),
+        ), md5($url));
     }
 
     private function _getPostByUrlFromCache($url)
     {
-    	if ($postData = $this->_getPostToUrlLinkStorage()->load(md5($url))) {
-    		return new Post($postData);
-    	}
-    	return false;
+        if ($postData = $this->_getPostToUrlLinkStorage()->load(md5($url))) {
+            return new Post($postData);
+        }
+        return false;
     }
 
     /**
@@ -188,6 +188,6 @@ class Api
      */
     private function _getPostToUrlLinkStorage()
     {
-    	return \Zend\Cache\Cache::factory('Core', 'File', array('lifetime' => null, 'automatic_serialization' => true), array('cache_dir' => realpath(__DIR__ . '/../cache')));
+        return \Zend\Cache\Cache::factory('Core', 'File', array('lifetime' => null, 'automatic_serialization' => true), array('cache_dir' => realpath(__DIR__ . '/../cache')));
     }
 }

@@ -15,33 +15,33 @@ class Post
 
     public function getId()
     {
-    	return $this->_get('id');
+        return $this->_get('id');
     }
 
     public function getAuthorName()
     {
-    	return $this->_get('authorName');
+        return $this->_get('authorName');
     }
 
     public function getDate()
     {
-    	return $this->_get('date');
+        return $this->_get('date');
     }
 
     public function getText()
     {
-    	return $this->_get('text');
+        return $this->_get('text');
     }
 
     public function getUrl()
     {
-    	return $this->_get('url');
+        return $this->_get('url');
     }
 
     public function containsString($string)
     {
-    	$content = print_r($this->_get('allContent'), true);
-    	return stristr($content, $string);
+        $content = print_r($this->_get('allContent'), true);
+        return stristr($content, $string);
     }
 
 
@@ -62,7 +62,7 @@ class Post
 
     private function _get($name, $default = null)
     {
-    	return isset($this->_params[$name]) ? $this->_params[$name] : $default;
+        return isset($this->_params[$name]) ? $this->_params[$name] : $default;
     }
 
 }
