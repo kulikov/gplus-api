@@ -64,7 +64,8 @@ _______
         
             var newNode = document.createElement('div')
             newNode.id = 'gplus-pingback';
-            document.getElementById('comments').parentNode.insertBefore(newNode, document.getElementById('comments').nextSibling);
+            var block = document.getElementById('comments');
+            block.parentNode.insertBefore(newNode, block.nextSibling);
         
             var gplusapi = document.createElement('script');
             gplusapi.type = 'text/javascript';
