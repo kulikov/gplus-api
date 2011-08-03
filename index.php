@@ -49,14 +49,14 @@ if ($comments) {
 
 $html = '
 <style type="text/css">
-    #gplus-pingback .gplus-pingback-header { margin: 20px 0 10px; border-top: #bbb 3px solid; padding: 10px 0 10px 22px; background: url("https://ssl.gstatic.com/s2/oz/images/favicon.ico") no-repeat left center; }
-    #gplus-pingback .gplus-pingback-item { border-top: #ccc 1px dotted; position: relative; padding: 8px 8px 8px 50px; }
-    #gplus-pingback .gplus-pingback-item-text { font-size: 13px; line-height: 1.4; padding-bottom: 2px; }
-    #gplus-pingback .gplus-pingback-item-date { font-size: 13px; line-height: 1.4; color: #999; }
-    #gplus-pingback .gplus-pingback-item-avatar { position: absolute; top: 8px; left: 8px; }
+    #gplus-pingback-wr .gplus-pingback-header { font-size: 14px; font-weight: bold; margin: 20px 0 10px; border-top: #bbb 3px solid; padding: 10px 0 10px 22px; background: url("https://ssl.gstatic.com/s2/oz/images/favicon.ico") no-repeat left center; }
+    #gplus-pingback-wr .gplus-pingback-item { border-top: #ccc 1px dotted; position: relative; padding: 8px 8px 8px 50px; }
+    #gplus-pingback-wr .gplus-pingback-item-text { font-size: 13px; line-height: 1.4; padding-bottom: 2px; }
+    #gplus-pingback-wr .gplus-pingback-item-date { font-size: 13px; line-height: 1.4; color: #999; }
+    #gplus-pingback-wr .gplus-pingback-item-avatar { position: absolute; top: 8px; left: 8px; }
 </style>
-<div id="gplus-pingback">
-<h3 class="gplus-pingback-header">'. (!empty($firstComment) ? ('<a href="'. htmlspecialchars($firstComment->getUrl()) .'" target="_blank">') : '') .'Комментарии из Google Plus+'. (!empty($firstComment) ? '</a>' : '') .'</h3>
+<div id="gplus-pingback-wr">
+<div class="gplus-pingback-header">'. (!empty($firstComment) ? ('<a href="'. htmlspecialchars($firstComment->getUrl()) .'" target="_blank">') : '') .'Комментарии из Google Plus+'. (!empty($firstComment) ? '</a>' : '') .'</div>
 ';
 
 if ($comments) {
