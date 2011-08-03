@@ -1,12 +1,8 @@
 <?php
 
-if ($_SERVER['REQUEST_URI'] == '/demo.html') {
-    require_once 'demo.html';
-    die;
-}
 
-if ($_SERVER['REQUEST_URI'] == '/demo1.html') {
-    require_once 'demo1.html';
+if (preg_match('/^\/demo\d*\.html$/', $_SERVER['REQUEST_URI'])) {
+	require_once trim($_SERVER['REQUEST_URI'], '/');
     die;
 }
 
