@@ -5,51 +5,64 @@ namespace Gplus;
 class Post
 {
     private
-        $_postId = null,
-        $_title = null,
-        $_url = null,
+        $_params   = array(),
         $_comments = array();
-        
-    public function __construct($postId)
+
+    public function __construct(array $params)
     {
-        $this->_postId = $postId;
+        $this->_params = $params;
     }
-    
+
     public function getId()
     {
-        return $this->_postId;
+    	return $this->_get('id');
     }
-    
-    public function getTitle()
+
+    public function getAuthorName()
     {
-        return $this->_title;
+    	return $this->_get('authorName');
     }
-    
-    public function setTitle($title)
+
+    public function getDate()
     {
-        $this->_title = $title;
-        return $this;
+    	return $this->_get('date');
     }
-    
+
+    public function getText()
+    {
+    	return $this->_get('text');
+    }
+
     public function getUrl()
     {
-        return $this->_url;
+    	return $this->_get('url');
     }
-    
-    public function setUrl($url)
+
+    public function containsString($string)
     {
-        $this->_url = $url;
-        return $this;
+    	$content = print_r($this->_get('allContent'), true);
+    	return stristr($content, $string);
     }
-    
+
+
+
     public function setComments($comments)
     {
         $this->_comments = $comments;
         return $this;
     }
-    
+
     public function getComments()
     {
         return $this->_comments;
     }
+
+
+    /* PRIVATE */
+
+    private function _get($name, $default = null)
+    {
+    	return isset($this->_params[$name]) ? $this->_params[$name] : $default;
+    }
+
 }

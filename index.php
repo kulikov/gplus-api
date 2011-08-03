@@ -1,42 +1,60 @@
 <?php
 
-error_reporting(E_ALL);
+/** * Configure and bootstraping */
+
+if ($_SERVER['REQUEST_URI'] == '/demo.html') {
+	require_once 'demo.html';
+	die;
+}
+
 date_default_timezone_set('Europe/Moscow');
-ini_set('display_errors', 'On');
-ini_set('include_path', __DIR__ . '/../../phplib' . PATH_SEPARATOR . ini_get('include_path'));
+header('Content-type: application/x-javascript; charset=utf-8');
+
+define('DIR_ZEND', realpath(__DIR__ . '/../phplib/zf2/library/Zend'));
+
+require_once DIR_ZEND . '/Loader/StandardAutoloader.php';
+$loader = new \Zend\Loader\StandardAutoloader();
+$loader->registerNamespace('Zend', DIR_ZEND);
+$loader->registerNamespace('Gplus', __DIR__ . '/Gplus');
+$loader->register();
 
 
-require_once __DIR__ . '/../../phplib/Zend/Json/Decoder.php';
-Zend_Json::$useBuiltinEncoderDecoder = true;
 
-require_once __DIR__ . '/../../phplib/Zend/Cache.php';
-$cacher = Zend_Cache::factory('Core', 'File', array('lifetime' => 7200), array('cache_dir' => __DIR__ . '/cache/'));
+/** * Application */
 
-use Gplus\Profile;
-require_once 'Gplus/Profile.php';
+$api = \Gplus\Api::factory($_GET['profile'], array(
+	'cacher' => \Zend\Cache\Cache::factory('Core', 'File', array('lifetime' => 7200, 'automatic_serialization' => true), array('cache_dir' => __DIR__ . '/cache/')),
+));
 
-$profile = new \Gplus\Profile('104578309919492528255');
-$profile->setCacher($cacher);
+$comments = $api->getPingbackComments(isset($_GET['url']) ? $_GET['url'] : $_SERVER['REFERER']);
 
-$lastComments = $profile->getLastComments();
+$html = '
+<style type="text/css">
+	#gplus-pingback .gplus-pingback-header { margin: 10px 0; border-top: #bbb 3px solid; padding: 10px 0 10px 22px; background: url("https://ssl.gstatic.com/s2/oz/images/favicon.ico") no-repeat left center; }
+	#gplus-pingback .gplus-pingback-item { border-top: #ccc 1px dotted; position: relative; padding: 8px 8px 8px 50px; }
+	#gplus-pingback .gplus-pingback-item-text { font-size: 13px; line-height: 1.4; padding-bottom: 2px; }
+	#gplus-pingback .gplus-pingback-item-date { font-size: 13px; line-height: 1.4; color: #999; }
+	#gplus-pingback .gplus-pingback-item-avatar { position: absolute; top: 8px; left: 8px; }
+</style>
+<div id="gplus-pingback">
+<h3 class="gplus-pingback-header">Комментарии из Google Plus+</h3>
+';
 
-header('Content-Type: application/xml; charset=UTF-8');
+foreach ($comments as $comment) {
+	$html .= '<div class="gplus-pingback-item">
+        <img src="'. htmlspecialchars($comment->getAuthorPhoto()) .'?sz=32" class="gplus-pingback-item-avatar" />
+        <div class="gplus-pingback-item-text">
+        	<a href="#" class="gplus-pingback-item-author">'. htmlspecialchars($comment->getAuthorName()) .'</a>&nbsp;-&nbsp;
+        	'. $comment->getText() .'
+        </div>
+        <div class="gplus-pingback-item-date">'. date('d.m.Y H:i', $comment->getDate()) .'</div>
+    </div>';
+}
 
-?>
+$html = str_replace(array("'", "\n", "\r"), array("\\'", '\\n', '\\r'), $html) . '</div>';
 
-<rss version="2.0">
-<channel>
-	<title>Последние комментарии</title>
-	<link><?php print $profile->getUrl()?></link>
-	<?php foreach ($lastComments as $comment): ?>
-	<item>
-		<title><![CDATA[<?php print htmlspecialchars($comment->getAuthorName()); ?>]]></title>
-		<guid isPermaLink="true"><?php print htmlspecialchars($comment->getUrl()); ?></guid>
-		<link><?php print htmlspecialchars($comment->getUrl()); ?></link>
-		<description><![CDATA[<?php print $comment->getText(); ?>]]></description>
-		<pubDate><?php print date('D, d M Y H:i:s O', $comment->getDate()); ?></pubDate>
-		<author><?php print htmlspecialchars($comment->getAuthorName()); ?></author>
-	</item>
-	<?php endforeach; ?>
-</channel>
-</rss>
+echo "(function() {
+    document.getElementById('gplus-pingback').innerHTML = '". $html ."';
+})();";
+
+
