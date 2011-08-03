@@ -68,7 +68,7 @@ _______
         
             var gplusapi = document.createElement('script');
             gplusapi.type = 'text/javascript';
-	    gplusapi.async = true;
+            gplusapi.async = true;
             gplusapi.src = 'http://gplus.kulikovd.ru/pingback?profile=104578309919492528255&url=' + window.location.href;
             document.getElementsByTagName('script')[0].parentNode.appendChild(gplusapi);
 	
