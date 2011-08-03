@@ -1,11 +1,20 @@
 <?php
 
-/** * Configure and bootstraping */
-
 if ($_SERVER['REQUEST_URI'] == '/demo.html') {
 	require_once 'demo.html';
 	die;
 }
+
+if ($_SERVER['REQUEST_URI'] == '/demo1.html') {
+	require_once 'demo1.html';
+	die;
+}
+
+
+/**
+ * Configure and bootstraping
+ */
+
 
 date_default_timezone_set('Europe/Moscow');
 header('Content-type: application/x-javascript; charset=utf-8');
@@ -26,8 +35,9 @@ $api = \Gplus\Api::factory($_GET['profile'], array(
 	'cacher' => \Zend\Cache\Cache::factory('Core', 'File', array('lifetime' => 7200, 'automatic_serialization' => true), array('cache_dir' => __DIR__ . '/cache/')),
 ));
 
-$comments = $api->getPingbackComments(isset($_GET['url']) ? $_GET['url'] : $_SERVER['HTTP_REFERER']);
-
+try {    $comments = $api->getPingbackComments(isset($_GET['url']) ? $_GET['url'] : $_SERVER['HTTP_REFERER']);} catch (Exception $e) {
+	$comments = array();
+    $error = $e->getMessage();}
 if ($comments) {
 	$firstComment = reset($comments);
 }
@@ -57,6 +67,9 @@ if ($comments) {
 	}
 } else {
 	$html .= '<div style="padding: 20px;">Комментариев пока нет</div>';
+	if (!empty($error)) {
+		$html .= '<div style="font-size: 11px; color: #999">'. htmlspecialchars($error) .'</div>';
+	}
 }
 
 $html = str_replace(array("'", "\n", "\r"), array("\\'", '\\n', '\\r'), $html) . '</div>';
@@ -64,5 +77,4 @@ $html = str_replace(array("'", "\n", "\r"), array("\\'", '\\n', '\\r'), $html) .
 echo "(function() {
     document.getElementById('gplus-pingback').innerHTML = '". $html ."';
 })();";
-
 
