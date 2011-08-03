@@ -64,13 +64,13 @@ _______
         
             var newNode = document.createElement('div')
             newNode.id = 'gplus-pingback';
-            document.getElementById('comments').parentNode.insertBefore( newNode, document.getElementById('comments').nextSibling );
+            document.getElementById('comments').parentNode.insertBefore(newNode, document.getElementById('comments').nextSibling);
         
             var gplusapi = document.createElement('script');
-	    gplusapi.type = 'text/javascript';
+            gplusapi.type = 'text/javascript';
 	    gplusapi.async = true;
-	    gplusapi.src = 'http://gplus.kulikovd.ru/pingback?profile=104578309919492528255&url=' + window.location.href;
-	    document.getElementsByTagName('script')[0].parentNode.appendChild(gplusapi);
+            gplusapi.src = 'http://gplus.kulikovd.ru/pingback?profile=104578309919492528255&url=' + window.location.href;
+            document.getElementsByTagName('script')[0].parentNode.appendChild(gplusapi);
 	
         })();
     </script> 
