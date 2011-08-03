@@ -30,15 +30,20 @@ $loader->register();
 
 
 
-/** * Application */
+/**
+ * Application
+ */
 
 $api = \Gplus\Api::factory($_GET['profile'], array(
     // 'cacher' => \Zend\Cache\Cache::factory('Core', 'File', array('lifetime' => 7200, 'automatic_serialization' => true), array('cache_dir' => __DIR__ . '/cache/')),
 ));
 
-try {    $comments = $api->getPingbackComments(isset($_GET['url']) ? $_GET['url'] : $_SERVER['HTTP_REFERER']);} catch (Exception $e) {
+try {
+    $comments = $api->getPingbackComments(isset($_GET['url']) ? $_GET['url'] : $_SERVER['HTTP_REFERER']);
+} catch (Exception $e) {
     $comments = array();
-    $error = $e->getMessage();}
+    $error = $e->getMessage();
+}
 if ($comments) {
     $firstComment = reset($comments);
 }
@@ -60,7 +65,7 @@ if ($comments) {
         $html .= '<div class="gplus-pingback-item">
             <img src="'. htmlspecialchars($comment->getAuthorPhoto()) .'?sz=32" class="gplus-pingback-item-avatar" />
             <div class="gplus-pingback-item-text">
-                <a href="' . htmlspecialchars($comment->getUrl()) .'" class="gplus-pingback-item-author" target="_blank">'. htmlspecialchars($comment->getAuthorName()) .'</a>&nbsp;-&nbsp;
+                <a href="' . htmlspecialchars($comment->getUrl()) .'" class="gplus-pingback-item-author" target="_blank">'. htmlspecialchars($comment->getAuthorName()) .'</a>&nbsp;&mdash;
                 '. $comment->getText() .'
             </div>
             <div class="gplus-pingback-item-date">'. date('d.m.Y H:i', $comment->getDate()) .'</div>
