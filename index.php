@@ -10,6 +10,11 @@ if ($_SERVER['REQUEST_URI'] == '/demo1.html') {
 	die;
 }
 
+if (empty($_GET['profile'])) {
+	header('Location: https://github.com/kulikov/gplus-api');
+	die;
+}
+
 
 /**
  * Configure and bootstraping
