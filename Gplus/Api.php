@@ -54,13 +54,24 @@ class Api
 
     	$posts = $this->getLastPosts();
 
-    	foreach ($posts as  $post) {
+    	foreach ($posts as $post) {
     		if ($post->containsString($url)) {
+
+    			/**    			 * Сохраняем пост, в котором была найденна ссылка
+    			 * В следующий раз, когда $this->getLastPosts() не вернет нам нужный пост мы будем доставать комменты из заранее известного поста    			 */
+    			$this->_savePostToUrlLink($post, $url);
+
     			return $this->getPostComments($post);    		}
+    	}
+
+    	/* ссылка не найдена в недавних постах — может мы ее парсили ранее и она есть в кеше? */
+    	if ($post = $this->_getPostByUrlFromCache($url)) {
+    		return $this->getPostComments($post);
     	}
 
     	return array();
     }
+
 
     public function getPostComments(Post $post)
     {
@@ -153,5 +164,30 @@ class Api
         }
 
         return $result;
+    }
+
+
+    private function _savePostToUrlLink(Post $post, $url)
+    {
+    	$this->_getPostToUrlLinkStorage()->save(array(
+    		'id'  => $post->getId(),
+    		'url' => $post->getUrl(),
+    	), md5($url));
+    }
+
+    private function _getPostByUrlFromCache($url)
+    {
+    	if ($postData = $this->_getPostToUrlLinkStorage()->load(md5($url))) {
+    		return new Post($postData);
+    	}
+    	return false;
+    }
+
+    /**
+     * @return \Zend\Cache\Frontend
+     */
+    private function _getPostToUrlLinkStorage()
+    {
+    	return \Zend\Cache\Cache::factory('Core', 'File', array('lifetime' => null, 'automatic_serialization' => true), array('cache_dir' => realpath(__DIR__ . '/../cache')));
     }
 }
