@@ -33,7 +33,7 @@ http://gplus.kulikovd.ru/demo.html — внизу странички после 
 	    })();
 	</script>
 	
-Блок с комментариями вставляется в элемент <div id="gplus-pingback"></div>
+Блок с комментариями вставляется в элемент &lt;div id="gplus-pingback"&gt;/div&lt;
 Размещяете в html-коде вашей странички блок 
 
 	<div id="gplus-pingback"></div>
