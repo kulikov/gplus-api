@@ -56,7 +56,7 @@ $html = '
 	#gplus-pingback .gplus-pingback-item-avatar { position: absolute; top: 8px; left: 8px; }
 </style>
 <div id="gplus-pingback">
-<h3 class="gplus-pingback-header">'. (!empty($firstComment) ? ('<a href="'. htmlspecialchars($firstComment->getUrl()) .'">') : '') .'Комментарии из Google Plus+'. (!empty($firstComment) ? '</a>' : '') .'</h3>
+<h3 class="gplus-pingback-header">'. (!empty($firstComment) ? ('<a href="'. htmlspecialchars($firstComment->getUrl()) .'" target="_blank">') : '') .'Комментарии из Google Plus+'. (!empty($firstComment) ? '</a>' : '') .'</h3>
 ';
 
 if ($comments) {
@@ -64,7 +64,7 @@ if ($comments) {
 		$html .= '<div class="gplus-pingback-item">
 	        <img src="'. htmlspecialchars($comment->getAuthorPhoto()) .'?sz=32" class="gplus-pingback-item-avatar" />
 	        <div class="gplus-pingback-item-text">
-	        	<a href="' . htmlspecialchars($comment->getUrl()) .'" class="gplus-pingback-item-author">'. htmlspecialchars($comment->getAuthorName()) .'</a>&nbsp;-&nbsp;
+	        	<a href="' . htmlspecialchars($comment->getUrl()) .'" class="gplus-pingback-item-author" target="_blank">'. htmlspecialchars($comment->getAuthorName()) .'</a>&nbsp;-&nbsp;
 	        	'. $comment->getText() .'
 	        </div>
 	        <div class="gplus-pingback-item-date">'. date('d.m.Y H:i', $comment->getDate()) .'</div>
