@@ -26,29 +26,37 @@ $api = \Gplus\Api::factory($_GET['profile'], array(
 	'cacher' => \Zend\Cache\Cache::factory('Core', 'File', array('lifetime' => 7200, 'automatic_serialization' => true), array('cache_dir' => __DIR__ . '/cache/')),
 ));
 
-$comments = $api->getPingbackComments(isset($_GET['url']) ? $_GET['url'] : $_SERVER['REFERER']);
+$comments = $api->getPingbackComments(isset($_GET['url']) ? $_GET['url'] : $_SERVER['HTTP_REFERER']);
+
+if ($comments) {
+	$firstComment = reset($comments);
+}
 
 $html = '
 <style type="text/css">
-	#gplus-pingback .gplus-pingback-header { margin: 10px 0; border-top: #bbb 3px solid; padding: 10px 0 10px 22px; background: url("https://ssl.gstatic.com/s2/oz/images/favicon.ico") no-repeat left center; }
+	#gplus-pingback .gplus-pingback-header { margin: 20px 0 10px; border-top: #bbb 3px solid; padding: 10px 0 10px 22px; background: url("https://ssl.gstatic.com/s2/oz/images/favicon.ico") no-repeat left center; }
 	#gplus-pingback .gplus-pingback-item { border-top: #ccc 1px dotted; position: relative; padding: 8px 8px 8px 50px; }
 	#gplus-pingback .gplus-pingback-item-text { font-size: 13px; line-height: 1.4; padding-bottom: 2px; }
 	#gplus-pingback .gplus-pingback-item-date { font-size: 13px; line-height: 1.4; color: #999; }
 	#gplus-pingback .gplus-pingback-item-avatar { position: absolute; top: 8px; left: 8px; }
 </style>
 <div id="gplus-pingback">
-<h3 class="gplus-pingback-header">Комментарии из Google Plus+</h3>
+<h3 class="gplus-pingback-header">'. (!empty($firstComment) ? ('<a href="'. htmlspecialchars($firstComment->getUrl()) .'">') : '') .'Комментарии из Google Plus+'. (!empty($firstComment) ? '</a>' : '') .'</h3>
 ';
 
-foreach ($comments as $comment) {
-	$html .= '<div class="gplus-pingback-item">
-        <img src="'. htmlspecialchars($comment->getAuthorPhoto()) .'?sz=32" class="gplus-pingback-item-avatar" />
-        <div class="gplus-pingback-item-text">
-        	<a href="#" class="gplus-pingback-item-author">'. htmlspecialchars($comment->getAuthorName()) .'</a>&nbsp;-&nbsp;
-        	'. $comment->getText() .'
-        </div>
-        <div class="gplus-pingback-item-date">'. date('d.m.Y H:i', $comment->getDate()) .'</div>
-    </div>';
+if ($comments) {
+	foreach ($comments as $comment) {
+		$html .= '<div class="gplus-pingback-item">
+	        <img src="'. htmlspecialchars($comment->getAuthorPhoto()) .'?sz=32" class="gplus-pingback-item-avatar" />
+	        <div class="gplus-pingback-item-text">
+	        	<a href="' . htmlspecialchars($comment->getUrl()) .'" class="gplus-pingback-item-author">'. htmlspecialchars($comment->getAuthorName()) .'</a>&nbsp;-&nbsp;
+	        	'. $comment->getText() .'
+	        </div>
+	        <div class="gplus-pingback-item-date">'. date('d.m.Y H:i', $comment->getDate()) .'</div>
+	    </div>';
+	}
+} else {
+	$html .= '<div style="padding: 20px;">Комментариев пока нет</div>';
 }
 
 $html = str_replace(array("'", "\n", "\r"), array("\\'", '\\n', '\\r'), $html) . '</div>';

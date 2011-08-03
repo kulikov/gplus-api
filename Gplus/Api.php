@@ -18,6 +18,9 @@ class Api
 
     public static function factory($profileId, array $options = array())
     {
+    	if (!$profileId) {
+    		throw new \Exception('Set your +profile id');
+    	}
 
     	$api = new self();
 
@@ -45,6 +48,10 @@ class Api
 
     public function getPingbackComments($url)
     {
+    	if (!$url) {
+    		throw new \Exception('Set url for pingback!');
+    	}
+
     	$posts = $this->getLastPosts();
 
     	foreach ($posts as  $post) {
