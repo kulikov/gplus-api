@@ -38,3 +38,6 @@ http://gplus.kulikovd.ru/demo.html — внизу странички после 
 
 ! Список комментариев кешируется и обновляется не чаще чем раз в 2 минуты
 ----------
+
+
+![preview](http://img.yandex.net/i/www/logo.png)
