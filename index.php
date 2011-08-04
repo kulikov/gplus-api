@@ -81,9 +81,9 @@ if ($comments) {
         </div>';
     }
 } else {
-    $html .= '<div style="margin: -15px 22px 20px;">Пока ничего не написали</div>';
+    $html .= '<div style="margin: -15px 22px 30px;">Пока ничего не написали</div>';
     if (!empty($error)) {
-        $html .= '<div style="font-size: 11px; color: #999; margin: -15px 22px 20px;">'. htmlspecialchars($error) .'</div>';
+        $html .= '<div style="font-size: 11px; color: #999; margin: -25px 22px 30px;">'. htmlspecialchars($error) .'</div>';
     }
 }
 
