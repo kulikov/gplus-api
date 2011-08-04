@@ -52,21 +52,26 @@ class Api
             throw new \Exception('Set url for pingback!');
         }
 
+        /* Сначала смотрим есть ли эта ссылка в кеше */
+        if ($post = $this->_getPostByUrlFromCache($url)) {
+            return $this->getPostComments($post);
+        }
+
         $posts = $this->getLastPosts();
+
+        rsort($posts); // ищем первое упоминание
 
         foreach ($posts as $post) {
             if ($post->containsString($url)) {
 
-                /**                 * Сохраняем пост, в котором была найденна ссылка
-                 * В следующий раз, когда $this->getLastPosts() не вернет нам нужный пост мы будем доставать комменты из заранее известного поста                 */
+                /**
+                 * Сохраняем пост, в котором была найденна ссылка
+                 * В следующий раз, когда $this->getLastPosts() не вернет нам нужный пост мы будем доставать комменты из заранее известного поста
+                 */
                 $this->_savePostToUrlLink($post, $url);
 
-                return $this->getPostComments($post);            }
-        }
-
-        /* ссылка не найдена в недавних постах — может мы ее парсили ранее и она есть в кеше? */
-        if ($post = $this->_getPostByUrlFromCache($url)) {
-            return $this->getPostComments($post);
+                return $this->getPostComments($post);
+            }
         }
 
         return array();
@@ -85,7 +90,7 @@ class Api
         });
 
         if (empty($content[1][7])) {
-            throw new \Exception('Error fetch post comments');
+            throw new \Exception('Сomments not found');
         }
 
         $output = array();
