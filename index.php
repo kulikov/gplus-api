@@ -1,6 +1,5 @@
 <?php
 
-
 if (preg_match('/^\/demo\d*\.html$/', $_SERVER['REQUEST_URI'])) {
     require_once trim($_SERVER['REQUEST_URI'], '/');
     die;
@@ -31,7 +30,7 @@ $loader->register();
 
 
 /**
- * Application
+ * Controller
  */
 
 $api = \Gplus\Api::factory($_GET['profile'], array(
@@ -42,18 +41,24 @@ try {
     $comments = $api->getPingbackComments(isset($_GET['url']) ? $_GET['url'] : $_SERVER['HTTP_REFERER']);
 } catch (Exception $e) {
     $comments = array();
-    $error = $e->getMessage();
+    $error    = $e->getMessage();
 }
+
 if ($comments) {
     $firstComment = reset($comments);
 }
+
+
+
+/**
+ * View
+ */
 
 $html = '
 <style type="text/css">
     #gplus-pingback-wr * { margin: 0; padding: 0; border: none; }
     #gplus-pingback-wr .gplus-pingback-header { font-size: 16px; font-weight: bold; margin: 20px 0 10px; border-top: #bbb 3px solid; padding: 10px 0 10px 22px; background: url("https://ssl.gstatic.com/s2/oz/images/favicon.ico") no-repeat left center; }
     #gplus-pingback-wr .gplus-pingback-item { border-top: #ccc 1px dotted; position: relative; padding: 8px 8px 8px 50px; }
-    #gplus-pingback-wr .gplus-pingback-item:hover { background-color: lightBlue; }
     #gplus-pingback-wr .gplus-pingback-item-text { font-size: 13px; line-height: 1.4; padding-bottom: 2px; }
     #gplus-pingback-wr .gplus-pingback-item-date { font-size: 13px; line-height: 1.4; color: #999; }
     #gplus-pingback-wr .gplus-pingback-item-avatar { position: absolute; top: 8px; left: 8px; text-decoration: none; display: block; }
@@ -85,6 +90,10 @@ if ($comments) {
 $html = str_replace(array("'", "\n", "\r"), array("\\'", '\\n', '\\r'), $html) . '</div>';
 
 echo "(function() {
-    document.getElementById('gplus-pingback').innerHTML = '". $html ."';
+    var _g = document.getElementById('gplus-pingback');
+    if (!_g) {
+        _g = document.createElement('div'); _g.id = 'gplus-pingback';
+        var _c = document.getElementById('comments'); _c.parentNode.insertBefore(_g, _c.nextSibling);
+    }
+    _g.innerHTML = '". $html ."';
 })();";
-

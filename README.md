@@ -15,31 +15,35 @@ http://gplus.kulikovd.ru/demo.html — внизу странички после 
 -------------
 
 В самый низ, перед закрывающимся тегом body вставляете следующий скрипт.
-Заменяете соответственно 104578309919492528255 — на id своего профайла из G+, а url=http://new.radio-t.com/2011/07/249_31.html — на урл странички где будут отображаться комментарии и на которую вы сослались в G+.
+Заменяете соответственно 106622629615873511071 — на id своего профайла из G+, 
+а url=http://new.radio-t.com/2011/07/249_31.html — на урл странички где будут 
+отображаться комментарии и на которую вы сослались в G+.
 
 Виджет находит среди ваших постов тот, который содержит ссылку на страничку, указанную в url=,
 и вытягивает из него комменты.
 
 По умолчанию в параметр url подставляется адрес текущей странички url=' + window.location.href
 
-
-	<script type='text/javascript'>
-	    (function() {
-	        var gplusapi = document.createElement('script');
-	        gplusapi.type = 'text/javascript';
-	        gplusapi.async = true;
-	        gplusapi.src = 'http://gplus.kulikovd.ru/pingback?profile=104578309919492528255&url=' + window.location.href;
-	        document.getElementsByTagName('script')[0].parentNode.appendChild(gplusapi);
-	    })();
-	</script>
-	
+    <script type='text/javascript'>//<![CDATA[
+        (function() {
+            var _gp = document.createElement('script');
+            _gp.type = 'text/javascript'; _gp.async = true;
+            _gp.src = 'http://gplus.kulikovd.ru/pingback?profile=106622629615873511071&url=' + window.location.href;
+            var _s = document.getElementsByTagName('script')[0]; _s.parentNode.insertBefore(_gp, _s.nextSibling);
+        })();
+    //]]></script>
+    
 Блок с комментариями вставляется в элемент &lt;div id="gplus-pingback"&gt;&lt;/div&gt;
 
-Размещаете в html-коде вашей странички блок 
+Размещаете в html-коде вашей странички блок:
 
-	<div id="gplus-pingback"></div>
+    <div id="gplus-pingback"></div>
 
 Именно в него загрузятся комментарии. Таким образом можно поместить этот блок в любое место сайта.
+
+Если не вставить блок &lt;div id="gplus-pingback"&gt;&lt;/div&gt; в станичку виджет попробует автоматически вставиться после
+блока &lt;div id="comments"&gt; (есть в большенстве шаблонов блоговых движков)
+
 
 
 ! Кеширование
@@ -48,31 +52,6 @@ http://gplus.kulikovd.ru/demo.html — внизу странички после 
 Список комментариев кешируется и обновляется не чаще чем раз в 2 минуты
 
 
-
-Blogger
--------
-
-В гугловском блогере сложно вставить тег div#gplus-pingback в нужно место. Поэтому можно добавлять его динамически.
-Для этого можно немного модифицировать код подключения виджета:
-
-    <script type='text/javascript'>
-        //<![CDATA[
-        (function() {
-            var newNode = document.createElement('div')
-            newNode.id = 'gplus-pingback';
-            var block = document.getElementById('comments');
-            block.parentNode.insertBefore(newNode, block.nextSibling);
-        
-            var gplusapi = document.createElement('script');
-            gplusapi.type = 'text/javascript';
-            gplusapi.async = true;
-            gplusapi.src = 'http://gplus.kulikovd.ru/pingback?profile=104578309919492528255&amp;url=' + window.location.href;
-            document.getElementsByTagName('script')[0].parentNode.appendChild(gplusapi);
-        })();
-        //]]>
-    </script> 
-
-Еще блогеровский шаблонизатор при валидации иногда ругается. Ему не нравится & в урле. Можно заменить & на &amp;amp; — тогда все работает.
 
 +
 ---------
