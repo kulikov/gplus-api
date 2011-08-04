@@ -56,8 +56,8 @@ Blogger
 Для этого можно немного модифицировать код подключения виджета:
 
     <script type='text/javascript'>
+        //<![CDATA[
         (function() {
-        
             var newNode = document.createElement('div')
             newNode.id = 'gplus-pingback';
             var block = document.getElementById('comments');
@@ -68,8 +68,8 @@ Blogger
             gplusapi.async = true;
             gplusapi.src = 'http://gplus.kulikovd.ru/pingback?profile=104578309919492528255&amp;url=' + window.location.href;
             document.getElementsByTagName('script')[0].parentNode.appendChild(gplusapi);
-	
         })();
+        //]]>
     </script> 
 
 Еще блогеровский шаблонизатор при валидации иногда ругается. Ему не нравится & в урле. Можно заменить & на &amp;amp; — тогда все работает.
