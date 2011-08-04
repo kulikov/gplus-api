@@ -64,7 +64,7 @@ $html = '
     #gplus-pingback-wr .gplus-pingback-item-avatar { position: absolute; top: 8px; left: 8px; text-decoration: none; display: block; }
 </style>
 <div id="gplus-pingback-wr">
-<div class="gplus-pingback-header">'. (!empty($firstComment) ? ('<a href="'. htmlspecialchars($firstComment->getUrl()) .'" target="_blank">') : '') .'Комментарии из Google Plus+'. (!empty($firstComment) ? '</a>' : '') .'</div>
+<div class="gplus-pingback-header"><a href="'. htmlspecialchars(!empty($firstComment) ? $firstComment->getUrl() : $api->getProfile()->getUrl()) .'" target="_blank">Комментарии из Google Plus+</a></div>
 ';
 
 if ($comments) {

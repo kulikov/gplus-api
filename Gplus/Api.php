@@ -39,7 +39,14 @@ class Api
         return $this;
     }
 
-    public function setCacher(\Zend\Cache\Frontend $cacher)
+    
+    public function getProfile()
+    {
+        return $this->_profile;
+    }
+
+
+	public function setCacher(\Zend\Cache\Frontend $cacher)
     {
         $this->_cacher = $cacher;
         return $this;

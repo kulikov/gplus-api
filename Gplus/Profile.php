@@ -18,4 +18,9 @@ class Profile
     {
         return $this->_profileId;
     }
+
+    public function getUrl()
+    {
+        return Api::GPLUS_URL . $this->getId();		
+    }
 }
