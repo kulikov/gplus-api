@@ -81,7 +81,7 @@ if ($comments) {
         </div>';
     }
 } else {
-    $html .= '<div style="margin: -10px 22px 20px;">Комментариев пока нет</div>';
+    $html .= '<div style="margin: -15px 22px 20px;">Пока ничего не написали</div>';
     if (!empty($error)) {
         $html .= '<div style="font-size: 11px; color: #999; margin: -15px 22px 20px;">'. htmlspecialchars($error) .'</div>';
     }
