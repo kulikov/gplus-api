@@ -2,7 +2,7 @@
 
 
 if (preg_match('/^\/demo\d*\.html$/', $_SERVER['REQUEST_URI'])) {
-	require_once trim($_SERVER['REQUEST_URI'], '/');
+    require_once trim($_SERVER['REQUEST_URI'], '/');
     die;
 }
 
@@ -50,11 +50,13 @@ if ($comments) {
 
 $html = '
 <style type="text/css">
-    #gplus-pingback-wr .gplus-pingback-header { font-size: 14px; font-weight: bold; margin: 20px 0 10px; border-top: #bbb 3px solid; padding: 10px 0 10px 22px; background: url("https://ssl.gstatic.com/s2/oz/images/favicon.ico") no-repeat left center; }
+    #gplus-pingback-wr * { margin: 0; padding: 0; border: none; }
+    #gplus-pingback-wr .gplus-pingback-header { font-size: 16px; font-weight: bold; margin: 20px 0 10px; border-top: #bbb 3px solid; padding: 10px 0 10px 22px; background: url("https://ssl.gstatic.com/s2/oz/images/favicon.ico") no-repeat left center; }
     #gplus-pingback-wr .gplus-pingback-item { border-top: #ccc 1px dotted; position: relative; padding: 8px 8px 8px 50px; }
+    #gplus-pingback-wr .gplus-pingback-item:hover { background-color: lightBlue; }
     #gplus-pingback-wr .gplus-pingback-item-text { font-size: 13px; line-height: 1.4; padding-bottom: 2px; }
     #gplus-pingback-wr .gplus-pingback-item-date { font-size: 13px; line-height: 1.4; color: #999; }
-    #gplus-pingback-wr .gplus-pingback-item-avatar { position: absolute; top: 8px; left: 8px; }
+    #gplus-pingback-wr .gplus-pingback-item-avatar { position: absolute; top: 8px; left: 8px; text-decoration: none; display: block; }
 </style>
 <div id="gplus-pingback-wr">
 <div class="gplus-pingback-header">'. (!empty($firstComment) ? ('<a href="'. htmlspecialchars($firstComment->getUrl()) .'" target="_blank">') : '') .'Комментарии из Google Plus+'. (!empty($firstComment) ? '</a>' : '') .'</div>
@@ -63,12 +65,14 @@ $html = '
 if ($comments) {
     foreach ($comments as $comment) {
         $html .= '<div class="gplus-pingback-item">
-            <img src="'. htmlspecialchars($comment->getAuthorPhoto()) .'?sz=32" class="gplus-pingback-item-avatar" />
+            <a href="' . htmlspecialchars($comment->getAuthorProfileUrl()) .'" class="gplus-pingback-item-avatar">
+                <img src="'. htmlspecialchars($comment->getAuthorPhoto()) .'?sz=32" />
+            </a>
             <div class="gplus-pingback-item-text">
-                <a href="' . htmlspecialchars($comment->getUrl()) .'" class="gplus-pingback-item-author" target="_blank">'. htmlspecialchars($comment->getAuthorName()) .'</a>&nbsp;&mdash;
+                <a href="' . htmlspecialchars($comment->getAuthorProfileUrl()) .'" class="gplus-pingback-item-author" target="_blank">'. htmlspecialchars($comment->getAuthorName()) .'</a>&nbsp;-
                 '. $comment->getText() .'
             </div>
-            <div class="gplus-pingback-item-date">'. date('d.m.Y H:i', $comment->getDate()) .'</div>
+            <div class="gplus-pingback-item-date">'. $comment->getFormatedDate() .'</div>
         </div>';
     }
 } else {

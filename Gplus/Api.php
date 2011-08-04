@@ -19,7 +19,7 @@ class Api
     public static function factory($profileId, array $options = array())
     {
         if (!$profileId) {
-            throw new \Exception('Set your +profile id');
+            throw new \Exception('Set your G+ profile id');
         }
 
         $api = new self();
@@ -93,6 +93,7 @@ class Api
             $output[] = new Comment(array(
                 'authorName'  => $comment[1],
                 'authorPhoto' => $comment[16],
+                'authorId'    => $comment[6],
                 'text'        => $comment[2],
                 'url'         => $post->getUrl(),
                 'date'        => round($comment[3] / 1000),
@@ -172,12 +173,12 @@ class Api
         $this->_getPostToUrlLinkStorage()->save(array(
             'id'  => $post->getId(),
             'url' => $post->getUrl(),
-        ), md5($url));
+        ), md5($url . $this->_profile->getId()));
     }
 
     private function _getPostByUrlFromCache($url)
     {
-        if ($postData = $this->_getPostToUrlLinkStorage()->load(md5($url))) {
+        if ($postData = $this->_getPostToUrlLinkStorage()->load(md5($url . $this->_profile->getId()))) {
             return new Post($postData);
         }
         return false;
