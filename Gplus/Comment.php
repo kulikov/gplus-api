@@ -56,6 +56,11 @@ class Comment
         return Api::GPLUS_URL . $this->_get('authorId');
     }
 
+    public function getPlusOneValue()
+    {
+        return (int) $this->_get('plusOneValue');
+    }
+
     private function _get($name)
     {
         return isset($this->_property[$name]) ? $this->_property[$name] : null;

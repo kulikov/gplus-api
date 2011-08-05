@@ -39,7 +39,7 @@ class Api
         return $this;
     }
 
-    
+
     public function getProfile()
     {
         return $this->_profile;
@@ -103,12 +103,13 @@ class Api
         $output = array();
         foreach ($content[1][7] as $comment) {
             $output[] = new Comment(array(
-                'authorName'  => $comment[1],
-                'authorPhoto' => $comment[16],
-                'authorId'    => $comment[6],
-                'text'        => $comment[2],
-                'url'         => $post->getUrl(),
-                'date'        => round($comment[3] / 1000),
+                'authorName'   => $comment[1],
+                'authorPhoto'  => $comment[16],
+                'authorId'     => $comment[6],
+                'text'         => $comment[2],
+                'url'          => $post->getUrl(),
+                'date'         => round($comment[3] / 1000),
+                'plusOneValue' => $comment[15][16],
             ));
         }
 

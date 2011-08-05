@@ -56,28 +56,48 @@ if ($comments) {
 
 $html = '
 <style type="text/css">
-    #gplus-pingback-wr * { margin: 0; padding: 0; border: none; }
-    #gplus-pingback-wr .gplus-pingback-header { font-size: 16px; font-weight: bold; margin: 20px 0 10px; border-top: #bbb 3px solid; padding: 10px 0 10px 22px; background: url("https://ssl.gstatic.com/s2/oz/images/favicon.ico") no-repeat left center; }
-    #gplus-pingback-wr .gplus-pingback-item { border-top: #ccc 1px dotted; position: relative; padding: 8px 8px 8px 50px; }
-    #gplus-pingback-wr .gplus-pingback-item-text { font-size: 13px; line-height: 1.4; padding-bottom: 2px; }
-    #gplus-pingback-wr .gplus-pingback-item-date { font-size: 13px; line-height: 1.4; color: #999; }
-    #gplus-pingback-wr .gplus-pingback-item-avatar { position: absolute; top: 8px; left: 8px; text-decoration: none; display: block; }
+    #gplus-pbwr * { margin: 0; padding: 0; border: none; }
+    #gplus-pbwr .gplus-pbh { margin: 20px 0 10px; border-top: #bbb 3px solid; padding: 10px 0 10px 22px; background: url("https://ssl.gstatic.com/s2/oz/images/favicon.ico") no-repeat left center; }
+    #gplus-pbwr .gplus-pbh-title { font-size: 16px; font-weight: bold; }
+    #gplus-pbwr .gplus-pbh-order { float: right; font-size: 12px; padding: 4px 0; }
+    #gplus-pbwr .gplus-pbh-order a { text-decoration: none; margin-left: 3px; padding: 3px 4px; }
+    #gplus-pbwr .gplus-pbh-order a u { text-decoration: none; border-bottom: 1px dotted; }
+    #gplus-pbwr .gplus-pbh-order .gplus-active { background: #d0e7fd; color: black; }
+    #gplus-pbwr .gplus-pbh-order .gplus-active u { border: none; }
+    #gplus-pbwr .gplus-pbi { border-top: #ccc 1px dotted; position: relative; padding: 8px 8px 8px 50px; }
+    #gplus-pbwr .gplus-pbi-avatar { position: absolute; top: 8px; left: 8px; text-decoration: none; display: block; }
+    #gplus-pbwr .gplus-pbi-text { font-size: 13px; line-height: 1.4; padding-bottom: 2px; }
+    #gplus-pbwr .gplus-pbi-footer { font-size: 13px; line-height: 1.4; }
+    #gplus-pbwr .gplus-pbi-date { margin-right: 10px; color: #999; }
+    #gplus-pbwr .gplus-pbi-plusone { color: #3366CC; font-style: italic; font-weight: bold; }
 </style>
-<div id="gplus-pingback-wr">
-<div class="gplus-pingback-header"><a href="'. htmlspecialchars(!empty($firstComment) ? $firstComment->getUrl() : $api->getProfile()->getUrl()) .'" target="_blank">Комментарии из Google Plus+</a></div>
+<div id="gplus-pbwr">
+<div class="gplus-pbh">
+	<div class="gplus-pbh-order">
+		<a href="#" onclick="GplusApi.sortBy(\'date\', 1); return false;" class="gplus-active"><u>новые снизу</u> &darr;</a>
+		<a href="#" onclick="GplusApi.sortBy(\'date\', 0); return false;"><u>новые сверху</u> &uarr;</a>
+		<a href="#" onclick="GplusApi.sortBy(\'gplus\', 1); return false;"><u>по рейтингу</u> +1</a>
+	</div>
+	<a class="gplus-pbh-title" href="'. htmlspecialchars(!empty($firstComment) ? $firstComment->getUrl() : $api->getProfile()->getUrl()) .'" target="_blank">Комментарии из Google Plus+</a>
+</div>
+<div id="gplus-pbwr-items">
 ';
 
 if ($comments) {
     foreach ($comments as $comment) {
-        $html .= '<div class="gplus-pingback-item">
-            <a href="' . htmlspecialchars($comment->getAuthorProfileUrl()) .'" class="gplus-pingback-item-avatar">
+    	$pgVal = $comment->getPlusOneValue();
+        $html .= '<div class="gplus-pbi" date="'. $comment->getDate() .'" gplus="'. $pgVal .'">
+            <a href="' . htmlspecialchars($comment->getAuthorProfileUrl()) .'" class="gplus-pbi-avatar">
                 <img src="'. htmlspecialchars($comment->getAuthorPhoto()) .'?sz=32" />
             </a>
-            <div class="gplus-pingback-item-text">
-                <a href="' . htmlspecialchars($comment->getAuthorProfileUrl()) .'" class="gplus-pingback-item-author" target="_blank">'. htmlspecialchars($comment->getAuthorName()) .'</a>&nbsp;-
+            <div class="gplus-pbi-text">
+                <a href="' . htmlspecialchars($comment->getAuthorProfileUrl()) .'" class="gplus-pbi-author" target="_blank">'. htmlspecialchars($comment->getAuthorName()) .'</a>&nbsp;-
                 '. $comment->getText() .'
             </div>
-            <div class="gplus-pingback-item-date">'. $comment->getFormatedDate() .'</div>
+            <div>
+            	<span class="gplus-pbi-date">'. $comment->getFormatedDate() .'</span>
+            	'. (($pgVal) ? '<span class="gplus-pbi-plusone">+'. $pgVal .'</span>' : '') .'
+            </div>
         </div>';
     }
 } else {
@@ -87,7 +107,7 @@ if ($comments) {
     }
 }
 
-$html = str_replace(array("'", "\n", "\r"), array("\\'", '\\n', '\\r'), $html) . '</div>';
+$html = str_replace(array("'", "\n", "\r"), array("\\'", '\\n', '\\r'), $html) . '</div></div>';
 
 echo "(function() {
     var _g = document.getElementById('gplus-pingback');
@@ -96,4 +116,18 @@ echo "(function() {
         var _c = document.getElementById('comments'); _c.parentNode.insertBefore(_g, _c.nextSibling);
     }
     _g.innerHTML = '". $html ."';
+
+    GplusApi = {
+    	sortBy: function(field, dir) {
+	    	var list = document.getElementById('gplus-pbwr-items'), items = list.childNodes, itemsArr = [];
+			for (var i in items) items[i].nodeType == 1 && itemsArr.push(items[i]);
+			itemsArr.sort(function(a, b) {
+				a = parseInt(a.getAttribute(field), 10), b = parseInt(b.getAttribute(field), 10);
+			    return a == b ? 0 : (a > b ? (dir ? -1 : 1) : (dir ? 1 : -1));
+			});
+			for (i in itemsArr) {
+			  list.appendChild(itemsArr[i]);
+			}
+    	}
+    };
 })();";
