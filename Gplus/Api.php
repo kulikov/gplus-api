@@ -194,8 +194,9 @@ class Api
     private function _savePostToUrlLink(Post $post, $url)
     {
         $this->_getPostToUrlLinkStorage()->save(array(
-            'id'  => $post->getId(),
-            'url' => $post->getUrl(),
+            'id'      => $post->getId(),
+            'url'     => $post->getUrl(),
+        	'backUrl' => $url,
         ), md5($url . $this->_profile->getId()));
     }
 
