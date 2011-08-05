@@ -16,7 +16,7 @@ if (empty($_GET['profile'])) {
  * Configure and bootstraping
  */
 
-
+ini_set('display_errors', 'off');
 date_default_timezone_set('Europe/Moscow');
 header('Content-type: application/x-javascript; charset=utf-8');
 
