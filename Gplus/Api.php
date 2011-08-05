@@ -112,7 +112,7 @@ class Api
             ));
         }
 
-        uasort($output, function($c1, $c2) { return $c1->getDate() < $c2->getDate(); });
+        uasort($output, function($c1, $c2) { return $c1->getDate() > $c2->getDate(); });
 
         return $output;
     }
