@@ -60,7 +60,8 @@ if ($comments) {
 $html = '
 <style type="text/css">
     #gplus-pbwr * { margin: 0; padding: 0; border: none; line-height: 1.4; }
-    #gplus-pbwr .gplus-pbh { margin: 20px 0 10px; border-top: #bbb 3px solid; padding: 10px 0 10px 22px; background: url("https://ssl.gstatic.com/s2/oz/images/favicon.ico") no-repeat left center; }
+    #gplus-pbwr { padding: 20px 0; }
+    #gplus-pbwr .gplus-pbh { margin-bottom: 10px; border-top: #bbb 3px solid; padding: 10px 0 10px 22px; background: url("https://ssl.gstatic.com/s2/oz/images/favicon.ico") no-repeat left center; }
     #gplus-pbwr .gplus-pbh-title { font-size: 16px; font-weight: bold; }
     #gplus-pbwr .gplus-pbh-order { float: right; font-size: 12px; padding: 3px 0; }
     #gplus-pbwr .gplus-pbh-order a { text-decoration: none; margin-left: 3px; padding: 2px 4px; }
