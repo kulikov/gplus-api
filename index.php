@@ -59,18 +59,18 @@ if ($comments) {
 
 $html = '
 <style type="text/css">
-    #gplus-pbwr * { margin: 0; padding: 0; border: none; }
+    #gplus-pbwr * { margin: 0; padding: 0; border: none; line-height: 1.4; }
     #gplus-pbwr .gplus-pbh { margin: 20px 0 10px; border-top: #bbb 3px solid; padding: 10px 0 10px 22px; background: url("https://ssl.gstatic.com/s2/oz/images/favicon.ico") no-repeat left center; }
     #gplus-pbwr .gplus-pbh-title { font-size: 16px; font-weight: bold; }
-    #gplus-pbwr .gplus-pbh-order { float: right; font-size: 12px; padding: 4px 0; }
-    #gplus-pbwr .gplus-pbh-order a { text-decoration: none; margin-left: 3px; padding: 3px 4px; }
+    #gplus-pbwr .gplus-pbh-order { float: right; font-size: 12px; padding: 3px 0; }
+    #gplus-pbwr .gplus-pbh-order a { text-decoration: none; margin-left: 3px; padding: 2px 4px; }
     #gplus-pbwr .gplus-pbh-order a u { text-decoration: none; border-bottom: 1px dotted; }
     #gplus-pbwr .gplus-pbh-order .gplus-active { background: #d0e7fd; color: black; }
     #gplus-pbwr .gplus-pbh-order .gplus-active u { border: none; }
     #gplus-pbwr .gplus-pbi { border-top: #ccc 1px dotted; position: relative; padding: 8px 8px 8px 50px; }
     #gplus-pbwr .gplus-pbi-avatar { position: absolute; top: 8px; left: 8px; text-decoration: none; display: block; }
-    #gplus-pbwr .gplus-pbi-text { font-size: 13px; line-height: 1.4; padding-bottom: 2px; }
-    #gplus-pbwr .gplus-pbi-footer { font-size: 13px; line-height: 1.4; }
+    #gplus-pbwr .gplus-pbi-text { font-size: 13px; padding-bottom: 2px; }
+    #gplus-pbwr .gplus-pbi-footer { font-size: 13px; }
     #gplus-pbwr .gplus-pbi-date { margin-right: 10px; color: #999; }
     #gplus-pbwr .gplus-pbi-plusone { color: #3366CC; font-style: italic; font-weight: bold; }
 </style>
@@ -134,7 +134,6 @@ echo preg_replace('/\s+/u', ' ', "(function() {
             var bns = button.parentNode.getElementsByTagName('a');
             for (i in bns) bns[i].className = '';
             button.className = 'gplus-active';
-            document.cookie = 'gplusOrder=' + field + (dir ? 'Asc' : 'Desc');
         }
     };
 })();");
