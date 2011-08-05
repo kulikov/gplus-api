@@ -53,7 +53,7 @@ class Api
     }
 
 
-    public function getPingbackComments($url)
+    public function getPingbackComments($url, $orderBy = null)
     {
         if (!$url) {
             throw new \Exception('Set url for pingback!');
@@ -61,7 +61,7 @@ class Api
 
         /* Сначала смотрим есть ли эта ссылка в кеше */
         if ($post = $this->_getPostByUrlFromCache($url)) {
-            return $this->getPostComments($post);
+            return $this->getPostComments($post, $orderBy);
         }
 
         $posts = $this->getLastPosts();
@@ -77,7 +77,7 @@ class Api
                  */
                 $this->_savePostToUrlLink($post, $url);
 
-                return $this->getPostComments($post);
+                return $this->getPostComments($post, $orderBy);
             }
         }
 
@@ -85,7 +85,7 @@ class Api
     }
 
 
-    public function getPostComments(Post $post)
+    public function getPostComments(Post $post, $orderBy = null)
     {
         $_commentsUrl = sprintf(self::COMMENTS_JSON_URL, $post->getId());
 
@@ -113,7 +113,17 @@ class Api
             ));
         }
 
-        uasort($output, function($c1, $c2) { return $c1->getDate() > $c2->getDate(); });
+        uasort($output, function($c1, $c2) use ($orderBy) {
+        	switch ($orderBy) {
+        		case 'gplusDesc':
+        			return $c1->getPlusOneValue() < $c2->getPlusOneValue();
+        		case 'dateDesc':
+        			return $c1->getDate() < $c2->getDate();
+        		default:
+        			return $c1->getDate() > $c2->getDate();
+        	}
+
+        });
 
         return $output;
     }

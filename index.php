@@ -11,6 +11,7 @@ if (empty($_GET['profile'])) {
 }
 
 
+
 /**
  * Configure and bootstraping
  */
@@ -29,6 +30,7 @@ $loader->register();
 
 
 
+
 /**
  * Controller
  */
@@ -38,7 +40,8 @@ $api = \Gplus\Api::factory($_GET['profile'], array(
 ));
 
 try {
-    $comments = $api->getPingbackComments(isset($_GET['url']) ? $_GET['url'] : $_SERVER['HTTP_REFERER']);
+    $orderBy  = isset($_COOKIE['gplusOrder']) ? $_COOKIE['gplusOrder'] : null;
+    $comments = $api->getPingbackComments(isset($_GET['url']) ? $_GET['url'] : $_SERVER['HTTP_REFERER'], $orderBy);
 } catch (Exception $e) {
     $comments = array();
     $error    = $e->getMessage();
@@ -73,19 +76,19 @@ $html = '
 </style>
 <div id="gplus-pbwr">
 <div class="gplus-pbh">
-	<div class="gplus-pbh-order">
-		<a href="#" onclick="GplusApi.sortBy(\'date\', 1); return false;" class="gplus-active"><u>новые снизу</u> &darr;</a>
-		<a href="#" onclick="GplusApi.sortBy(\'date\', 0); return false;"><u>новые сверху</u> &uarr;</a>
-		<a href="#" onclick="GplusApi.sortBy(\'gplus\', 1); return false;"><u>по рейтингу</u> +1</a>
-	</div>
-	<a class="gplus-pbh-title" href="'. htmlspecialchars(!empty($firstComment) ? $firstComment->getUrl() : $api->getProfile()->getUrl()) .'" target="_blank">Комментарии из Google Plus+</a>
+    <div class="gplus-pbh-order">
+        <a href="#" onclick="GplusApi.sortBy(this, \'date\', 1); return false;" '. ($orderBy != 'gplusDesc' && $orderBy != 'dateDesc' ? 'class="gplus-active"' : '') .'><u>новые снизу</u> &darr;</a>
+        <a href="#" onclick="GplusApi.sortBy(this, \'date\', 0); return false;" '. ($orderBy == 'dateDesc' ? 'class="gplus-active"' : '') .'><u>новые сверху</u> &uarr;</a>
+        <a href="#" onclick="GplusApi.sortBy(this, \'gplus\'); return false;" '. ($orderBy == 'gplusDesc' ? 'class="gplus-active"' : '') .'><u>по рейтингу</u> +1</a>
+    </div>
+    <a class="gplus-pbh-title" href="'. htmlspecialchars(!empty($firstComment) ? $firstComment->getUrl() : $api->getProfile()->getUrl()) .'" target="_blank">Комментарии из Google Plus+</a>
 </div>
 <div id="gplus-pbwr-items">
 ';
 
 if ($comments) {
     foreach ($comments as $comment) {
-    	$pgVal = $comment->getPlusOneValue();
+        $pgVal = $comment->getPlusOneValue();
         $html .= '<div class="gplus-pbi" date="'. $comment->getDate() .'" gplus="'. $pgVal .'">
             <a href="' . htmlspecialchars($comment->getAuthorProfileUrl()) .'" class="gplus-pbi-avatar">
                 <img src="'. htmlspecialchars($comment->getAuthorPhoto()) .'?sz=32" />
@@ -95,8 +98,8 @@ if ($comments) {
                 '. $comment->getText() .'
             </div>
             <div>
-            	<span class="gplus-pbi-date">'. $comment->getFormatedDate() .'</span>
-            	'. (($pgVal) ? '<span class="gplus-pbi-plusone">+'. $pgVal .'</span>' : '') .'
+                <span class="gplus-pbi-date">'. $comment->getFormatedDate() .'</span>
+                '. (($pgVal) ? '<span class="gplus-pbi-plusone">+'. $pgVal .'</span>' : '') .'
             </div>
         </div>';
     }
@@ -109,7 +112,7 @@ if ($comments) {
 
 $html = str_replace(array("'", "\n", "\r"), array("\\'", '\\n', '\\r'), $html) . '</div></div>';
 
-echo "(function() {
+echo preg_replace('/\s+/u', ' ', "(function() {
     var _g = document.getElementById('gplus-pingback');
     if (!_g) {
         _g = document.createElement('div'); _g.id = 'gplus-pingback';
@@ -118,16 +121,20 @@ echo "(function() {
     _g.innerHTML = '". $html ."';
 
     GplusApi = {
-    	sortBy: function(field, dir) {
-	    	var list = document.getElementById('gplus-pbwr-items'), items = list.childNodes, itemsArr = [];
-			for (var i in items) items[i].nodeType == 1 && itemsArr.push(items[i]);
-			itemsArr.sort(function(a, b) {
-				a = parseInt(a.getAttribute(field), 10), b = parseInt(b.getAttribute(field), 10);
-			    return a == b ? 0 : (a > b ? (dir ? -1 : 1) : (dir ? 1 : -1));
-			});
-			for (i in itemsArr) {
-			  list.appendChild(itemsArr[i]);
-			}
-    	}
+        sortBy: function(button, field, dir) {
+            var list = document.getElementById('gplus-pbwr-items'), items = list.childNodes, itemsArr = [];
+            for (var i in items) items[i].nodeType == 1 && itemsArr.push(items[i]);
+            itemsArr.sort(function(a, b) {
+                a = parseInt(a.getAttribute(field), 10), b = parseInt(b.getAttribute(field), 10);
+                return a == b ? 0 : (a > b ? (dir ? 1 : -1) : (dir ? -1 : 1));
+            });
+            for (i in itemsArr) {
+              list.appendChild(itemsArr[i]);
+            }
+            var bns = button.parentNode.getElementsByTagName('a');
+            for (i in bns) bns[i].className = '';
+            button.className = 'gplus-active';
+            document.cookie = 'gplusOrder=' + field + (dir ? 'Asc' : 'Desc');
+        }
     };
-})();";
+})();");
