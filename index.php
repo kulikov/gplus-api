@@ -77,7 +77,7 @@ $html = '
 </style>
 <div id="gplus-pbwr">
 <div class="gplus-pbh">
-    '. ($comments ? '<div class="gplus-pbh-order">
+    '. (count($comments) > 2 ? '<div class="gplus-pbh-order">
         <a href="#" onclick="GplusApi.sortBy(this, \'date\', 1); return false;" '. ($orderBy != 'gplusDesc' && $orderBy != 'dateDesc' ? 'class="gplus-active"' : '') .'><u>новые снизу</u> &darr;</a>
         <a href="#" onclick="GplusApi.sortBy(this, \'date\', 0); return false;" '. ($orderBy == 'dateDesc' ? 'class="gplus-active"' : '') .'><u>новые сверху</u> &uarr;</a>
         <a href="#" onclick="GplusApi.sortBy(this, \'gplus\'); return false;" '. ($orderBy == 'gplusDesc' ? 'class="gplus-active"' : '') .'><u>по рейтингу</u> +1</a>
