@@ -77,12 +77,12 @@ $html = '
 </style>
 <div id="gplus-pbwr">
 <div class="gplus-pbh">
-    <div class="gplus-pbh-order">
+    '. ($comments ? '<div class="gplus-pbh-order">
         <a href="#" onclick="GplusApi.sortBy(this, \'date\', 1); return false;" '. ($orderBy != 'gplusDesc' && $orderBy != 'dateDesc' ? 'class="gplus-active"' : '') .'><u>новые снизу</u> &darr;</a>
         <a href="#" onclick="GplusApi.sortBy(this, \'date\', 0); return false;" '. ($orderBy == 'dateDesc' ? 'class="gplus-active"' : '') .'><u>новые сверху</u> &uarr;</a>
         <a href="#" onclick="GplusApi.sortBy(this, \'gplus\'); return false;" '. ($orderBy == 'gplusDesc' ? 'class="gplus-active"' : '') .'><u>по рейтингу</u> +1</a>
-    </div>
-    <a class="gplus-pbh-title" href="'. htmlspecialchars(!empty($firstComment) ? $firstComment->getUrl() : $api->getProfile()->getUrl()) .'" target="_blank">Комментарии из Google Plus+</a>
+    </div>' : '') .
+    '<a class="gplus-pbh-title" href="'. htmlspecialchars(!empty($firstComment) ? $firstComment->getUrl() : $api->getProfile()->getUrl()) .'" target="_blank">Комментарии из Google Plus+</a>
 </div>
 <div id="gplus-pbwr-items">
 ';
