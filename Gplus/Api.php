@@ -2,8 +2,6 @@
 
 namespace Gplus;
 
-use Zend\Pdf\Action\Thread;
-
 class Api
 {
     const
