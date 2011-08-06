@@ -60,7 +60,7 @@ if ($comments) {
 $html = '
 <style type="text/css">
     #gplus-pbwr * { margin: 0; padding: 0; border: none; line-height: 1.4; }
-    #gplus-pbwr { padding: 20px 0; }
+    #gplus-pbwr { padding: 20px 0; font-size: 13px; }
     #gplus-pbwr .gplus-pbh { margin-bottom: 10px; border-top: #bbb 3px solid; padding: 10px 0 10px 22px; background: url("https://ssl.gstatic.com/s2/oz/images/favicon.ico") no-repeat left center; }
     #gplus-pbwr .gplus-pbh-title { font-size: 16px; font-weight: bold; }
     #gplus-pbwr .gplus-pbh-order { float: right; font-size: 12px; padding: 3px 0; }
@@ -70,10 +70,11 @@ $html = '
     #gplus-pbwr .gplus-pbh-order .gplus-active u { border: none; }
     #gplus-pbwr .gplus-pbi { border-top: #ccc 1px dotted; position: relative; padding: 8px 8px 8px 50px; }
     #gplus-pbwr .gplus-pbi-avatar { position: absolute; top: 8px; left: 8px; text-decoration: none; display: block; }
-    #gplus-pbwr .gplus-pbi-text { font-size: 13px; padding-bottom: 2px; }
-    #gplus-pbwr .gplus-pbi-footer { font-size: 13px; }
+    #gplus-pbwr .gplus-pbi-text { padding-bottom: 2px; }
     #gplus-pbwr .gplus-pbi-date { margin-right: 10px; color: #999; }
     #gplus-pbwr .gplus-pbi-plusone { color: #3366CC; font-style: italic; font-weight: bold; }
+    #gplus-pbwr .glpus-pb-footer { background: url("http://gplus.kulikovd.ru/google-plus-16x16.png") no-repeat scroll 24px 7px transparent; padding: 5px 50px; }
+    #gplus-pbwr .glpus-pb-footer a { font-size: 14px; text-decoration: underline; }
 </style>
 <div id="gplus-pbwr">
 <div class="gplus-pbh">
@@ -111,7 +112,13 @@ if ($comments) {
     }
 }
 
-$html = str_replace(array("'", "\n", "\r"), array("\\'", '\\n', '\\r'), $html) . '</div></div>';
+$html = str_replace(array("'", "\n", "\r"), array("\\'", '\\n', '\\r'), $html) . '</div>';
+
+$html .= '
+    <div class="glpus-pb-footer">
+        <a href="'. htmlspecialchars(!empty($firstComment) ? $firstComment->getUrl() : $api->getProfile()->getUrl()) .'" target="_blank">Добавить комментарий в Google+</a>
+    </div>
+</div>';
 
 echo preg_replace('/\s+/u', ' ', "(function() {
     var _g = document.getElementById('gplus-pingback');
@@ -129,7 +136,7 @@ echo preg_replace('/\s+/u', ' ', "(function() {
                 a = parseInt(a.getAttribute(field), 10), b = parseInt(b.getAttribute(field), 10);
                 return a == b ? 0 : (a > b ? (dir ? 1 : -1) : (dir ? -1 : 1));
             });
-            for (i in itemsArr) {
+            for (var i = 0, _cnt = itemsArr.length; i < _cnt; i++) {
               list.appendChild(itemsArr[i]);
             }
             var bns = button.parentNode.getElementsByTagName('a');
