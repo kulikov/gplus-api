@@ -106,7 +106,7 @@ if ($comments) {
         </div>';
     }
 } else {
-    $html .= '<div style="margin: -15px 22px 30px;">Пока ничего нет</div>';
+    $html .= '<div style="margin: -15px 22px 30px;">Пока ничего нет. <a href="'. htmlspecialchars($api->getProfile()->getUrl()) .'" target="_blank">Добавить комментарий...</a></div>';
     if (!empty($error)) {
         $html .= '<div style="font-size: 11px; color: #999; margin: -25px 22px 30px;">'. htmlspecialchars($error) .'</div>';
     }
@@ -114,11 +114,11 @@ if ($comments) {
 
 $html = str_replace(array("'", "\n", "\r"), array("\\'", '\\n', '\\r'), $html) . '</div>';
 
-$html .= '
-    <div class="glpus-pb-footer">
-        <a href="'. htmlspecialchars(!empty($firstComment) ? $firstComment->getUrl() : $api->getProfile()->getUrl()) .'" target="_blank">Добавить комментарий в Google+</a>
-    </div>
-</div>';
+if ($comments) {
+	$html .= '<div class="glpus-pb-footer"><a href="'. htmlspecialchars($firstComment->getUrl()) .'" target="_blank">Добавить комментарий в Google+</a></div>';
+}
+
+$html .= '</div>';
 
 echo preg_replace('/\s+/u', ' ', "(function() {
     var _g = document.getElementById('gplus-pingback');
