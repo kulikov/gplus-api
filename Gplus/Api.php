@@ -144,6 +144,7 @@ class Api
         });
 
         $output = array();
+
         foreach ($content[1][0] as $_post) {
             $output[] = new Post(array(
                 'id'         => $_post[8],
@@ -152,7 +153,7 @@ class Api
                 'text'       => $_post[4],
                 'authorName' => $_post[8],
                 'url'        => self::GPLUS_URL . $_post[21],
-                'allContent' => $_post,
+                'allContent' => array($_post[3], $_post[4], $_post[66]), // тут будет искаться ссылка для pingback'а
             ));
         }
 
