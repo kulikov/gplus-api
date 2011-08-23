@@ -83,7 +83,9 @@ $html = '
         <a href="#" onclick="GplusApi.sortBy(this, \'date\', 0); return false;" '. ($orderBy == 'dateDesc' ? 'class="gplus-active"' : '') .'><u>новые сверху</u> &uarr;</a>
         <a href="#" onclick="GplusApi.sortBy(this, \'gplus\'); return false;" '. ($orderBy == 'gplusDesc' ? 'class="gplus-active"' : '') .'><u>по рейтингу</u> +1</a>
     </div>' : '') .
-    '<a class="gplus-pbh-title" href="'. htmlspecialchars(!empty($firstComment) ? $firstComment->getUrl() : $api->getProfile()->getUrl()) .'" target="_blank">Комментарии из Google Plus+</a>
+    '<a class="gplus-pbh-title" href="'. htmlspecialchars(!empty($firstComment) ? $firstComment->getUrl() : $api->getProfile()->getUrl()) .'" target="_blank">
+    	'. ($comments ? \Gplus\Api::inciting(count($comments), 'комментарий', 'комментария', 'комментариев') : 'Комментарии') .' из Google+
+    </a>
 </div>
 <div id="gplus-pbwr-items">
 ';
