@@ -40,17 +40,15 @@ $api = \Gplus\Api::factory($_GET['profile'], array(
 ));
 
 try {
+
+    $post = $api->findPostByString(isset($_GET['url']) ? $_GET['url'] : $_SERVER['HTTP_REFERER']);
+
     $orderBy  = isset($_COOKIE['gplusOrder']) ? $_COOKIE['gplusOrder'] : null;
-    $comments = $api->getPingbackComments(isset($_GET['url']) ? $_GET['url'] : $_SERVER['HTTP_REFERER'], $orderBy);
+    $comments = $api->getPostComments($post, $orderBy);
+
 } catch (Exception $e) {
-    $comments = array();
-    $error    = $e->getMessage();
+    exit("var _msg = '". $e->getMessage() ."';");
 }
-
-if ($comments) {
-    $firstComment = reset($comments);
-}
-
 
 
 /**
@@ -83,7 +81,7 @@ $html = '
         <a href="#" onclick="GplusApi.sortBy(this, \'date\', 0); return false;" '. ($orderBy == 'dateDesc' ? 'class="gplus-active"' : '') .'><u>новые сверху</u> &uarr;</a>
         <a href="#" onclick="GplusApi.sortBy(this, \'gplus\'); return false;" '. ($orderBy == 'gplusDesc' ? 'class="gplus-active"' : '') .'><u>по рейтингу</u> +1</a>
     </div>' : '') .
-    '<a class="gplus-pbh-title" href="'. htmlspecialchars(!empty($firstComment) ? $firstComment->getUrl() : $api->getProfile()->getUrl()) .'" target="_blank">
+    '<a class="gplus-pbh-title" href="'. htmlspecialchars($post->getUrl()) .'" target="_blank">
     	'. ($comments ? \Gplus\Api::inciting(count($comments), 'комментарий', 'комментария', 'комментариев') : 'Комментарии') .' из Google+
     </a>
 </div>
@@ -108,16 +106,13 @@ if ($comments) {
         </div>';
     }
 } else {
-    $html .= '<div style="margin: -15px 22px 30px;">Пока ничего нет. <a href="'. htmlspecialchars($api->getProfile()->getUrl()) .'" target="_blank">Добавить комментарий...</a></div>';
-    if (!empty($error)) {
-        $html .= '<div style="font-size: 11px; color: #999; margin: -25px 22px 30px;">'. htmlspecialchars($error) .'</div>';
-    }
+    $html .= '<div style="margin: -15px 22px 30px;">Пока ничего нет. <a href="'. htmlspecialchars($post->getUrl()) .'" target="_blank">Добавить комментарий...</a></div>';
 }
 
 $html = str_replace(array("'", "\n", "\r"), array("\\'", '\\n', '\\r'), $html) . '</div>';
 
 if ($comments) {
-	$html .= '<div class="glpus-pb-footer"><a href="'. htmlspecialchars($firstComment->getUrl()) .'" target="_blank">Добавить комментарий в Google+</a></div>';
+	$html .= '<div class="glpus-pb-footer"><a href="'. htmlspecialchars($post->getUrl()) .'" target="_blank">Добавить комментарий в Google+</a></div>';
 }
 
 $html .= '</div>';

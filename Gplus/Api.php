@@ -51,15 +51,15 @@ class Api
     }
 
 
-    public function getPingbackComments($url, $orderBy = null)
+    public function findPostByString($string)
     {
-        if (!$url) {
-            throw new \Exception('Set url for pingback!');
+        if (!$string) {
+            throw new \Exception('Set string for matching!');
         }
 
         /* Сначала смотрим есть ли эта ссылка в кеше */
-        if ($post = $this->_getPostByUrlFromCache($url)) {
-            return $this->getPostComments($post, $orderBy);
+        if ($post = $this->_getPostByStringFromCache($string)) {
+            return $post;
         }
 
         $posts = $this->getLastPosts();
@@ -67,19 +67,19 @@ class Api
         rsort($posts); // ищем первое упоминание
 
         foreach ($posts as $post) {
-            if ($post->containsString($url)) {
+            if ($post->containsString($string)) {
 
                 /**
                  * Сохраняем пост, в котором была найденна ссылка
                  * В следующий раз, когда $this->getLastPosts() не вернет нам нужный пост мы будем доставать комменты из заранее известного поста
                  */
-                $this->_savePostToUrlLink($post, $url);
+                $this->_savePostSearchLink($post, $string);
 
-                return $this->getPostComments($post, $orderBy);
+                return $post;
             }
         }
 
-        return array();
+        throw new \Exception('Post not found!');
     }
 
 
@@ -94,8 +94,12 @@ class Api
             return \Zend\Json\Decoder::decode(substr($content, 5), \Zend\Json\Json::TYPE_ARRAY);
         });
 
+        if (empty($content[1])) {
+            throw new \Exception('Post not found');
+        }
+
         if (empty($content[1][7])) {
-            throw new \Exception('Сomments not found');
+        	return array();
         }
 
         $output = array();
@@ -208,18 +212,18 @@ class Api
     }
 
 
-    private function _savePostToUrlLink(Post $post, $url)
+    private function _savePostSearchLink(Post $post, $string)
     {
-        $this->_getPostToUrlLinkStorage()->save(array(
-            'id'      => $post->getId(),
-            'url'     => $post->getUrl(),
-        	'backUrl' => $url,
-        ), md5($url . $this->_profile->getId()));
+        $this->_getPostSearchStorage()->save(array(
+            'id'            => $post->getId(),
+            'url'           => $post->getUrl(),
+        	'_searchString' => $string,
+        ), md5($string . $this->_profile->getId()));
     }
 
-    private function _getPostByUrlFromCache($url)
+    private function _getPostByStringFromCache($string)
     {
-        if ($postData = $this->_getPostToUrlLinkStorage()->load(md5($url . $this->_profile->getId()))) {
+        if ($postData = $this->_getPostSearchStorage()->load(md5($string . $this->_profile->getId()))) {
             return new Post($postData);
         }
         return false;
@@ -228,7 +232,7 @@ class Api
     /**
      * @return \Zend\Cache\Frontend
      */
-    private function _getPostToUrlLinkStorage()
+    private function _getPostSearchStorage()
     {
         return \Zend\Cache\Cache::factory('Core', 'File', array('lifetime' => null, 'automatic_serialization' => true), array('cache_dir' => realpath(__DIR__ . '/../cache')));
     }
