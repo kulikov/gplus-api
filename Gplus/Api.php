@@ -43,13 +43,11 @@ class Api
         return $this->_profile;
     }
 
-
 	public function setCacher(\Zend\Cache\Frontend $cacher)
     {
         $this->_cacher = $cacher;
         return $this;
     }
-
 
     public function findPostByString($string)
     {
@@ -94,16 +92,16 @@ class Api
             return \Zend\Json\Decoder::decode(substr($content, 5), \Zend\Json\Json::TYPE_ARRAY);
         });
 
-        if (empty($content[1])) {
+        if (empty($content[0][1])) {
             throw new \Exception('Post not found');
         }
 
-        if (empty($content[1][7])) {
+        if (empty($content[0][1][7])) {
         	return array();
         }
 
         $output = array();
-        foreach ($content[1][7] as $comment) {
+        foreach ($content[0][1][7] as $comment) {
             $output[] = new Comment(array(
                 'authorName'   => $comment[1],
                 'authorPhoto'  => $comment[16],
@@ -147,9 +145,12 @@ class Api
             return \Zend\Json\Decoder::decode(substr($content, 5), \Zend\Json\Json::TYPE_ARRAY);
         });
 
-        $output = array();
+        if (empty($content[0][1][0])) {
+            throw new \Exception('Posts not found!');
+        }
 
-        foreach ($content[1][0] as $_post) {
+        $output = array();
+        foreach ($content[0][1][0] as $_post) {
             $output[] = new Post(array(
                 'id'         => $_post[8],
                 'authorName' => $_post[3],
@@ -165,11 +166,13 @@ class Api
     }
 
 
-    /**     * Хелпер для правильного вывода кол-ва комментов
+    /**
+     * Хелпер для правильного вывода кол-ва комментов
      *
      * <code>
      *     Api:inciting(12, 'комментарий', 'комментария', 'комментариев');
-     * </code>     */
+     * </code>
+     */
 	public static function inciting($d, $form1, $form2, $form5 = false)
 	{
 	    $d      = (string) $d;
