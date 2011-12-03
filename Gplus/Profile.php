@@ -2,9 +2,6 @@
 
 namespace Gplus;
 
-require_once 'Post.php';
-require_once 'Comment.php';
-
 class Profile
 {
     private $_profileId = null;
@@ -21,6 +18,6 @@ class Profile
 
     public function getUrl()
     {
-        return Api::GPLUS_URL . $this->getId();		
+        return Api::GPLUS_URL . $this->getId();
     }
 }
