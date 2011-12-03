@@ -173,18 +173,18 @@ class Api
      *     Api:inciting(12, 'комментарий', 'комментария', 'комментариев');
      * </code>
      */
-	public static function inciting($d, $form1, $form2, $form5 = false)
-	{
-	    $d      = (string) $d;
-	    $n      = abs($d) % 100;
-	    $n1     = $n % 10;
-	    $form5  = $form5 ?: $form2;
-	    $prefix = $d . ' ';
-	    if ($n > 10 && $n < 20) return $prefix . $form5;
-	    if ($n1 > 1 && $n1 < 5) return $prefix . $form2;
-	    if ($n1 == 1) return $prefix . $form1;
-	    return $prefix . $form5;
-	}
+    public static function inciting($d, $form1, $form2, $form5 = false)
+    {
+        $d      = (string) $d;
+        $n      = abs($d) % 100;
+        $n1     = $n % 10;
+        $form5  = $form5 ?: $form2;
+        $prefix = $d . ' ';
+        if ($n > 10 && $n < 20) return $prefix . $form5;
+        if ($n1 > 1 && $n1 < 5) return $prefix . $form2;
+        if ($n1 == 1) return $prefix . $form1;
+        return $prefix . $form5;
+    }
 
 
 
