@@ -16,7 +16,7 @@ if (empty($_GET['profile'])) {
  * Configure and bootstraping
  */
 
-ini_set('display_errors', 'off');
+ini_set('display_errors', 'on');
 date_default_timezone_set('Europe/Moscow');
 header('Content-type: application/x-javascript; charset=utf-8');
 
@@ -36,7 +36,7 @@ $loader->register();
  */
 
 $api = \Gplus\Api::factory($_GET['profile'], array(
-    // 'cacher' => \Zend\Cache\Cache::factory('Core', 'File', array('lifetime' => 7200, 'automatic_serialization' => true), array('cache_dir' => __DIR__ . '/cache/')),
+    'apiKey' => '...',
 ));
 
 try {

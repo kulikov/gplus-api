@@ -2,30 +2,33 @@
 
 namespace Gplus;
 
+use Zend;
+
 class Api
 {
     const
         GPLUS_URL         = 'https://plus.google.com/',
-        POSTS_JSON_URL    = 'https://plus.google.com/_/stream/getactivities/%s/?sp=[1,2,"%s",null,null,null,null,"social.google.com",[]]',
-        COMMENTS_JSON_URL = 'https://plus.google.com/_/stream/getactivity/?updateId=%s';
+        POSTS_JSON_URL    = 'https://www.googleapis.com/plus/v1/people/%s/activities/public',
+        COMMENTS_JSON_URL = 'https://www.googleapis.com/plus/v1/activities/%s/comments';
 
     private
-        $_cacher  = null,
-        $_profile = null;
+        $_apiKey        = null,
+        $_profile       = null,
+        $_searchStorage = null;
 
 
     public static function factory($profileId, array $options = array())
     {
         if (!$profileId) {
-            throw new \Exception('Set your G+ profile id');
+            throw new Exception('Set your G+ profile id');
         }
 
         $api = new self();
 
         $api->setProfile(new Profile($profileId));
 
-        if (isset($options['cacher'])) {
-            $api->setCacher($options['cacher']);
+        if (isset($options['apiKey'])) {
+            $api->_apiKey = $options['apiKey'];
         }
 
         return $api;
@@ -43,16 +46,10 @@ class Api
         return $this->_profile;
     }
 
-	public function setCacher(\Zend\Cache\Frontend $cacher)
-    {
-        $this->_cacher = $cacher;
-        return $this;
-    }
-
     public function findPostByString($string)
     {
         if (!$string) {
-            throw new \Exception('Set string for matching!');
+            throw new Exception('Set string for matching!');
         }
 
         /* Сначала смотрим есть ли эта ссылка в кеше */
@@ -77,7 +74,7 @@ class Api
             }
         }
 
-        throw new \Exception('Post not found!');
+        throw new Exception('Post not found!');
     }
 
 
@@ -85,31 +82,29 @@ class Api
     {
         $_commentsUrl = sprintf(self::COMMENTS_JSON_URL, $post->getId());
 
-        $content = $this->_cache(3600, $_commentsUrl, function() use ($_commentsUrl) {
+        $client = new Zend\Http\Client($_commentsUrl);
+        $content = $client->setParameterGet(array('key' => $this->_apiKey))->send()->getBody();
 
-            $client = new \Zend\Http\Client($_commentsUrl);
-            $content = $client->request()->getBody();
-            return \Zend\Json\Decoder::decode(substr($content, 5), \Zend\Json\Json::TYPE_ARRAY);
-        });
+        $content = Zend\Json\Decoder::decode($content, Zend\Json\Json::TYPE_ARRAY);
 
-        if (empty($content[0][1])) {
-            throw new \Exception('Post not found');
+        if (!empty($content['error'])) {
+            throw new Exception('Post not found. ' . $content['error']['message']);
         }
 
-        if (empty($content[0][1][7])) {
+        if (empty($content['items'])) {
         	return array();
         }
 
         $output = array();
-        foreach ($content[0][1][7] as $comment) {
+        foreach ($content['items'] as $comment) {
             $output[] = new Comment(array(
-                'authorName'   => $comment[1],
-                'authorPhoto'  => $comment[16],
-                'authorId'     => $comment[6],
-                'text'         => $comment[2],
+                'authorName'   => $comment['actor']['displayName'],
+                'authorPhoto'  => $comment['actor']['image']['url'],
+                'authorId'     => $comment['actor']['id'],
+                'text'         => $comment['object']['content'],
                 'url'          => $post->getUrl(),
-                'date'         => round($comment[3] / 1000),
-                'plusOneValue' => $comment[15][16],
+                'date'         => strtotime($comment['published']),
+                'plusOneValue' => '',
             ));
         }
 
@@ -131,34 +126,33 @@ class Api
     public function getLastPosts()
     {
         $_profileId = $this->_profile->getId();
-        $_postUrl   = sprintf(self::POSTS_JSON_URL, $_profileId, $_profileId);
+        $_postUrl   = sprintf(self::POSTS_JSON_URL, $_profileId);
 
-        $content = $this->_cache(3600, $_postUrl, function() use ($_postUrl) {
+        $client = new Zend\Http\Client($_postUrl);
+        $content = $client->setParameterGet(array('key' => $this->_apiKey))->send()->getBody();
 
-            $client = new \Zend\Http\Client($_postUrl);
-            $content = $client->request()->getBody();
+        if (!$content) {
+            throw new \Exception('Error fetch posts');
+        }
 
-            if (!$content) {
-                throw new \Exception('Error fetch posts');
-            }
+        $content = Zend\Json\Decoder::decode($content, Zend\Json\Json::TYPE_ARRAY);
 
-            return \Zend\Json\Decoder::decode(substr($content, 5), \Zend\Json\Json::TYPE_ARRAY);
-        });
-
-        if (empty($content[0][1][0])) {
+        if (empty($content['items'])) {
             throw new \Exception('Posts not found!');
         }
 
         $output = array();
-        foreach ($content[0][1][0] as $_post) {
+        foreach ($content['items'] as $_post) {
             $output[] = new Post(array(
-                'id'         => $_post[8],
-                'authorName' => $_post[3],
-                'date'       => round($_post[5] / 1000),
-                'text'       => $_post[4],
-                'authorName' => $_post[8],
-                'url'        => self::GPLUS_URL . $_post[21],
-                'allContent' => array($_post[3], $_post[4], $_post[66]), // тут будет искаться ссылка для pingback'а
+                'id'         => $_post['id'],
+                'authorName' => $_post['actor']['displayName'],
+                'date'       => strtotime($_post['published']),
+                'text'       => $_post['object']['content'],
+                'url'        => $_post['url'],
+                'allContent' => array( // тут будет искаться ссылка для pingback'а
+                    $_post['object']['content'],
+                    isset($_post['object']['attachments']) ? $_post['object']['attachments'] : ''
+                ),
             ));
         }
 
@@ -217,7 +211,7 @@ class Api
 
     private function _savePostSearchLink(Post $post, $string)
     {
-        $this->_getPostSearchStorage()->save(array(
+        $this->_getPostSearchStorage()->setItem(array(
             'id'            => $post->getId(),
             'url'           => $post->getUrl(),
         	'_searchString' => $string,
@@ -226,17 +220,26 @@ class Api
 
     private function _getPostByStringFromCache($string)
     {
-        if ($postData = $this->_getPostSearchStorage()->load(md5($string . $this->_profile->getId()))) {
+        if ($postData = $this->_getPostSearchStorage()->getItem(md5($string . $this->_profile->getId()))) {
             return new Post($postData);
         }
         return false;
     }
 
     /**
-     * @return \Zend\Cache\Frontend
+     * @return Zend\Cache\Frontend
      */
     private function _getPostSearchStorage()
     {
-        return \Zend\Cache\Cache::factory('Core', 'File', array('lifetime' => null, 'automatic_serialization' => true), array('cache_dir' => realpath(__DIR__ . '/../cache')));
+        if ($this->_searchStorage === null) {
+            $this->_searchStorage = Zend\Cache\StorageFactory::factory(array(
+                'adapter' => 'Filesystem',
+                'options' => array(
+                    'cacheDir' => realpath(__DIR__ . '/../cache'),
+                ),
+                'plugins' => array('Serializer'),
+            ));
+        }
+        return $this->_searchStorage;
     }
 }
