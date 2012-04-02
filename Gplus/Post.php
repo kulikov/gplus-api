@@ -40,7 +40,7 @@ class Post
 
     public function containsString($string)
     {
-        $content = print_r($this->_get('allContent'), true);
+        $content = print_r(array($this->_get('allContent'), $this->getText()), true);
         return stristr($content, $string);
     }
 

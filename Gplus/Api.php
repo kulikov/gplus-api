@@ -20,7 +20,7 @@ class Api
     public static function factory($profileId, array $options = array())
     {
         if (!$profileId) {
-            throw new Exception('Set your G+ profile id');
+            throw new \Exception('Set your G+ profile id');
         }
 
         $api = new self();
@@ -49,7 +49,7 @@ class Api
     public function findPostByString($string)
     {
         if (!$string) {
-            throw new Exception('Set string for matching!');
+            throw new \Exception('Set string for matching!');
         }
 
         /* Сначала смотрим есть ли эта ссылка в кеше */
@@ -74,7 +74,7 @@ class Api
             }
         }
 
-        throw new Exception('Post not found!');
+        throw new \Exception('Post not found!');
     }
 
 
@@ -83,12 +83,16 @@ class Api
         $_commentsUrl = sprintf(self::COMMENTS_JSON_URL, $post->getId());
 
         $client = new Zend\Http\Client($_commentsUrl);
-        $content = $client->setParameterGet(array('key' => $this->_apiKey))->send()->getBody();
+        $content = $client->setParameterGet(array(
+            'key' => $this->_apiKey,
+            'maxResults' => 100,
+            'fields' => 'items(actor(displayName,id,image),object/content,published)',
+        ))->send()->getBody();
 
         $content = Zend\Json\Decoder::decode($content, Zend\Json\Json::TYPE_ARRAY);
 
         if (!empty($content['error'])) {
-            throw new Exception('Post not found. ' . $content['error']['message']);
+            throw new \Exception('Post not found. ' . $content['error']['message']);
         }
 
         if (empty($content['items'])) {
@@ -127,9 +131,13 @@ class Api
     {
         $_profileId = $this->_profile->getId();
         $_postUrl   = sprintf(self::POSTS_JSON_URL, $_profileId);
-
+        
         $client = new Zend\Http\Client($_postUrl);
-        $content = $client->setParameterGet(array('key' => $this->_apiKey))->send()->getBody();
+        $content = $client->setParameterGet(array(
+            'key' => $this->_apiKey, 
+            'maxResults' => '50',
+            'fields' => 'items(actor/displayName,id,object(attachments(content,displayName,embed/url,url),content),published,url)',
+        ))->send()->getBody();
 
         if (!$content) {
             throw new \Exception('Error fetch posts');
@@ -150,7 +158,6 @@ class Api
                 'text'       => $_post['object']['content'],
                 'url'        => $_post['url'],
                 'allContent' => array( // тут будет искаться ссылка для pingback'а
-                    $_post['object']['content'],
                     isset($_post['object']['attachments']) ? $_post['object']['attachments'] : ''
                 ),
             ));

@@ -93,7 +93,7 @@ if ($comments) {
         $pgVal = $comment->getPlusOneValue();
         $html .= '<div class="gplus-pbi" date="'. $comment->getDate() .'" gplus="'. $pgVal .'">
             <a href="' . htmlspecialchars($comment->getAuthorProfileUrl()) .'" class="gplus-pbi-avatar">
-                <img src="'. htmlspecialchars($comment->getAuthorPhoto()) .'?sz=32" />
+                <img src="'. htmlspecialchars($comment->getAuthorPhoto()) .'&sz=32" />
             </a>
             <div class="gplus-pbi-text">
                 <a href="' . htmlspecialchars($comment->getAuthorProfileUrl()) .'" class="gplus-pbi-author" target="_blank">'. htmlspecialchars($comment->getAuthorName()) .'</a>&nbsp;-
