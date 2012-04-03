@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Виджет комментариев из G+ by kulikov</title>
+    
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Виджет комментариев из G+</h1>
+        <p>Google Plus+ api (beta). Widget for comments</p>
+        <p class="view"><a href="https://github.com/kulikov/gplus-api">View the Project on GitHub <small>kulikov/gplus-api</small></a></p>
+        <ul>
+          <li><a href="https://github.com/kulikov/gplus-api/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/kulikov/gplus-api/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/kulikov/gplus-api">Fork On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>Виджет для экспорта комментариев из Google Plus+ в свой блог</h1>
+
+<p><img src="http://gplus.kulikovd.ru/gplus-preview.jpg" alt="preview"></p>
+
+<h2>Пример</h2>
+
+<p><a href="http://gplus.kulikovd.ru/demo1.html">http://gplus.kulikovd.ru/demo1.html</a></p>
+
+<p><a href="http://gplus.kulikovd.ru/demo.html">http://gplus.kulikovd.ru/demo.html</a> — внизу странички после комментариев из дискуса</p>
+
+<h2>Использование</h2>
+
+<p>В самый низ, перед закрывающимся тегом body вставляете следующий скрипт.
+Заменяете соответственно 106622629615873511071 — на id своего профайла из G+, 
+а url=<a href="http://new.radio-t.com/2011/07/249_31.html">http://new.radio-t.com/2011/07/249_31.html</a> — на урл странички где будут 
+отображаться комментарии и на которую вы сослались в G+.</p>
+
+<p>Виджет находит среди ваших постов тот, который содержит ссылку на страничку, указанную в url=,
+и вытягивает из него комменты.</p>
+
+<p>По умолчанию в параметр url подставляется адрес текущей странички url=' + window.location.href</p>
+
+<pre><code>&lt;script type='text/javascript'&gt;//&lt;![CDATA[
+    (function() {
+        var _gp = document.createElement('script');
+        _gp.type = 'text/javascript'; _gp.async = true;
+        _gp.src = '<a href="http://gplus.kulikovd.ru/pingback?profile=106622629615873511071&amp;url=">http://gplus.kulikovd.ru/pingback?profile=106622629615873511071&amp;url=</a>' + window.location.href;
+        var _s = document.getElementsByTagName('script')[0]; _s.parentNode.insertBefore(_gp, _s.nextSibling);
+    })();
+//]]&gt;&lt;/script&gt;
+</code></pre>
+
+<p>По умолчанию виджет ищет на страничке блок с комментариями &lt;div id="comments"&gt; (есть в WordPress и Blogger) и вставляется сразу после него.</p>
+
+<p>Но можно и явно указать куда он будет вставлен. Для этого нужно поместить в html-код вашей странички блок:</p>
+
+<pre><code>&lt;div id="gplus-pingback"&gt;&lt;/div&gt;
+</code></pre>
+
+<p>И комментарии загрузятся в него. Таким образом можно поместить виджет в любое место сайта.</p>
+
+<h2>! Кеширование</h2>
+
+<p>Список комментариев кешируется и обновляется не чаще чем раз в 2 минуты</p>
+
+<h2>+</h2>
+
+<p>Сделано по мотивам этого поста Umputun'а <a href="https://plus.google.com/104578309919492528255/posts/GrRV3p8BYiZ">https://plus.google.com/104578309919492528255/posts/GrRV3p8BYiZ</a></p>
+
+<h2>Changelog</h2>
+
+<p><strong>v0.4</strong></p>
+
+<ul>
+<li>В заголовке выводится количество комментариев</li>
+<li>Виджет не показывается совсем, если в G+ нет поста со ссылкой на эту страницу</li>
+<li>Добавил ссылки для добавления комментариев (переходит на G+)</li>
+</ul><p><strong>v0.3</strong></p>
+
+<ul>
+<li>Добавил кнопки сортировки комментариев по дате вверх/вниз и по оценкам комментариев</li>
+<li>У комментариев теперь выводится их оценка. Пока только просто показывается, но скоро прикручу и кнопочку выставления</li>
+</ul><p><strong>v0.2</strong></p>
+
+<p><strong>v0.1</strong></p>
+
+<h2>TODO</h2>
+
+<ul>
+<li>Добавлять комменты прямо в виджете</li>
+<li>Оценивать комментарии тут же</li>
+<li>Производительность: поставить на nginx прокси в мемкеш. Обновлять кеш асинхронно по очереди. Тогда сам виджет будет всегда забирать данные из кеша, а кеш будет пересчитываться в фоне. Если в мемкеше пусто — подсовывать nginx'у статичную js болванку с надписью «Пока комментов нет» и по мере сил парсить комменты и писать их в мемкеш. %) как-то так. Демона, парсящего коменты рестартить раз в 10 минут по крону. А для очереди заданий заюзать или тот-же мемкеш или что-нибудь типа rabbitmq</li>
+<li>Вот интересная библиотека — возможно она подойдет <a href="https://github.com/akalend/amqp-rest">https://github.com/akalend/amqp-rest</a> </li>
+<li>Защита от спама и доса – поковырять встроенные возможности nginx (ngx_accesskey_module). Наверняка там есть что-то для этого.</li>
+<li>переписать в итоге все на питончике :). А потом можно и на хабре статейку опубликовать.</li>
+</ul>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/kulikov">kulikov</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+  </body>
+</html>
