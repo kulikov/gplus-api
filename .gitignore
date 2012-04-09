@@ -2,3 +2,4 @@ cache/
 .buildpath
 .project
 .settings
+api.key

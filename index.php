@@ -36,7 +36,7 @@ $loader->register();
  */
 
 $api = \Gplus\Api::factory($_GET['profile'], array(
-    'apiKey' => 'AIzaSyBHuaWzlrJabdDUE-J4YM4Hq_qevA0nEVU',
+    'apiKey' => trim(file_get_contents('./api.key')),
 ));
 
 try {
