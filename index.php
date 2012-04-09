@@ -36,7 +36,7 @@ $loader->register();
  */
 
 $api = \Gplus\Api::factory($_GET['profile'], array(
-    'apiKey' => '...',
+    'apiKey' => 'AIzaSyBHuaWzlrJabdDUE-J4YM4Hq_qevA0nEVU',
 ));
 
 try {
@@ -121,7 +121,9 @@ echo preg_replace('/\s+/u', ' ', "(function() {
     var _g = document.getElementById('gplus-pingback');
     if (!_g) {
         _g = document.createElement('div'); _g.id = 'gplus-pingback';
-        var _c = document.getElementById('comments'); _c.parentNode.insertBefore(_g, _c.nextSibling);
+        var _c = document.getElementById('comments'); 
+        if (!_c) return;
+        _c.parentNode.insertBefore(_g, _c.nextSibling);
     }
     _g.innerHTML = '". $html ."';
 
