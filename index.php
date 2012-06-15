@@ -121,7 +121,7 @@ echo preg_replace('/\s+/u', ' ', "(function() {
     var _g = document.getElementById('gplus-pingback');
     if (!_g) {
         _g = document.createElement('div'); _g.id = 'gplus-pingback';
-        var _c = document.getElementById('comments'); 
+        var _c = document.getElementById('comments') || document.getElementById('disqus_thread'); 
         if (!_c) return;
         _c.parentNode.insertBefore(_g, _c.nextSibling);
     }
