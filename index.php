@@ -39,9 +39,20 @@ $api = \Gplus\Api::factory($_GET['profile'], array(
     'apiKey' => trim(file_get_contents('./api.key')),
 ));
 
+$url = isset($_GET['url']) ? $_GET['url'] : $_SERVER['HTTP_REFERER'];
+
+if (file_exists("rewrites.map")) {
+    $rewrites = include 'rewrites.map';
+    $rewrites = array_flip($rewrites);
+    if (isset($rewrites[$url])) {
+        $url = $rewrites[$url];
+    }
+}
+
+
 try {
 
-    $post = $api->findPostByString(isset($_GET['url']) ? $_GET['url'] : $_SERVER['HTTP_REFERER']);
+    $post = $api->findPostByString($url);
 
     $orderBy  = isset($_COOKIE['gplusOrder']) ? $_COOKIE['gplusOrder'] : null;
     $comments = $api->getPostComments($post, $orderBy);
@@ -58,9 +69,9 @@ try {
 $html = '
 <style type="text/css">
     #gplus-pbwr * { margin: 0; padding: 0; border: none; line-height: 1.4; }
-    #gplus-pbwr { padding: 20px 0; font-size: 13px; }
+    #gplus-pbwr { padding: 20px 0; font-size: 13px; font-family: Arial, Tahoma, serif; }
     #gplus-pbwr .gplus-pbh { margin-bottom: 10px; border-top: #bbb 3px solid; padding: 10px 0 10px 22px; background: url("https://ssl.gstatic.com/s2/oz/images/favicon.ico") no-repeat left center; }
-    #gplus-pbwr .gplus-pbh-title { font-size: 16px; font-weight: bold; }
+    #gplus-pbwr .gplus-pbh-title { font-size: 16px; font-weight: bold; text-decoration: none; }
     #gplus-pbwr .gplus-pbh-order { float: right; font-size: 12px; padding: 3px 0; }
     #gplus-pbwr .gplus-pbh-order a { text-decoration: none; margin-left: 3px; padding: 2px 4px; }
     #gplus-pbwr .gplus-pbh-order a u { text-decoration: none; border-bottom: 1px dotted; }
@@ -68,6 +79,8 @@ $html = '
     #gplus-pbwr .gplus-pbh-order .gplus-active u { border: none; }
     #gplus-pbwr .gplus-pbi { border-top: #ccc 1px dotted; position: relative; padding: 8px 8px 8px 50px; }
     #gplus-pbwr .gplus-pbi-avatar { position: absolute; top: 8px; left: 8px; text-decoration: none; display: block; }
+    #gplus-pbwr .gplus-pbi-avatar img { width: 32px; height: 32px; }
+    #gplus-pbwr .gplus-pbi-author { text-decoration: none; }
     #gplus-pbwr .gplus-pbi-text { padding-bottom: 2px; }
     #gplus-pbwr .gplus-pbi-date { margin-right: 10px; color: #999; }
     #gplus-pbwr .gplus-pbi-plusone { color: #3366CC; font-style: italic; font-weight: bold; }
@@ -96,7 +109,7 @@ if ($comments) {
                 <img src="'. htmlspecialchars($comment->getAuthorPhoto()) .'&sz=32" />
             </a>
             <div class="gplus-pbi-text">
-                <a href="' . htmlspecialchars($comment->getAuthorProfileUrl()) .'" class="gplus-pbi-author" target="_blank">'. htmlspecialchars($comment->getAuthorName()) .'</a>&nbsp;-
+                <a href="' . htmlspecialchars($comment->getAuthorProfileUrl()) .'" class="gplus-pbi-author" target="_blank">'. htmlspecialchars($comment->getAuthorName()) .'</a>&nbsp;&ndash;
                 '. $comment->getText() .'
             </div>
             <div>

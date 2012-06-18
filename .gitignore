@@ -3,3 +3,4 @@ cache/
 .project
 .settings
 api.key
+rewrites.map
