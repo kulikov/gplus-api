@@ -86,7 +86,7 @@ class Api
         $content = $client->setParameterGet(array(
             'key' => $this->_apiKey,
             'maxResults' => 100,
-            'fields' => 'items(actor(displayName,id,image),object/content,published)',
+            'fields' => 'items(actor(displayName,id,image),object/content,published,plusoners/totalItems)',
         ))->send()->getBody();
 
         $content = Zend\Json\Decoder::decode($content, Zend\Json\Json::TYPE_ARRAY);
@@ -108,7 +108,7 @@ class Api
                 'text'         => $comment['object']['content'],
                 'url'          => $post->getUrl(),
                 'date'         => strtotime($comment['published']),
-                'plusOneValue' => '',
+                'plusOneValue' => $comment['plusoners']['totalItems'],
             ));
         }
 
