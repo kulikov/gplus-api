@@ -96,7 +96,7 @@ class Api
         }
 
         if (empty($content['items'])) {
-        	return array();
+            return array();
         }
 
         $output = array();
@@ -113,14 +113,14 @@ class Api
         }
 
         uasort($output, function($c1, $c2) use ($orderBy) {
-        	switch ($orderBy) {
-        		case 'gplusDesc':
-        			return $c1->getPlusOneValue() < $c2->getPlusOneValue();
-        		case 'dateDesc':
-        			return $c1->getDate() < $c2->getDate();
-        		default:
-        			return $c1->getDate() > $c2->getDate();
-        	}
+            switch ($orderBy) {
+                case 'gplusDesc':
+                    return $c1->getPlusOneValue() < $c2->getPlusOneValue();
+                case 'dateDesc':
+                    return $c1->getDate() < $c2->getDate();
+                default:
+                    return $c1->getDate() > $c2->getDate();
+            }
 
         });
 
@@ -221,7 +221,7 @@ class Api
         $this->_getPostSearchStorage()->setItem(array(
             'id'            => $post->getId(),
             'url'           => $post->getUrl(),
-        	'_searchString' => $string,
+            '_searchString' => $string,
         ), md5($string . $this->_profile->getId()));
     }
 
