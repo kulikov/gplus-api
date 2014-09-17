@@ -85,7 +85,7 @@ class Api
         $client = new Zend\Http\Client($_commentsUrl);
         $content = $client->setParameterGet(array(
             'key' => $this->_apiKey,
-            'maxResults' => 100,
+            'maxResults' => 10,
             'fields' => 'items(actor(displayName,id,image),object/content,published,plusoners/totalItems)',
         ))->send()->getBody();
 
